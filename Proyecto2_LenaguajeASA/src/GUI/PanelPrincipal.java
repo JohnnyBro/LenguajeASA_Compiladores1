@@ -5,6 +5,7 @@
  */
 package GUI;
 
+import Acciones.*;
 import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 import java.awt.Component;
 import java.awt.event.ComponentListener;
@@ -43,6 +44,8 @@ public class PanelPrincipal extends javax.swing.JFrame {
     private void initComponents() {
 
         Pestanas = new javax.swing.JTabbedPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtConsola = new javax.swing.JEditorPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         itemNuevo = new javax.swing.JMenuItem();
@@ -51,8 +54,11 @@ public class PanelPrincipal extends javax.swing.JFrame {
         itemCerrar = new javax.swing.JMenuItem();
         itemSalir = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        itemEjecutar = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jScrollPane1.setViewportView(txtConsola);
 
         jMenu1.setText("Archivo");
 
@@ -98,7 +104,16 @@ public class PanelPrincipal extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Edit");
+        jMenu2.setText("Herramientas");
+
+        itemEjecutar.setText("Ejecutar");
+        itemEjecutar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemEjecutarActionPerformed(evt);
+            }
+        });
+        jMenu2.add(itemEjecutar);
+
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -109,15 +124,19 @@ public class PanelPrincipal extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(Pestanas, javax.swing.GroupLayout.PREFERRED_SIZE, 600, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(112, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(Pestanas, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE))
+                .addContainerGap(227, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(Pestanas, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(70, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(30, Short.MAX_VALUE))
         );
 
         pack();
@@ -199,19 +218,64 @@ public class PanelPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_itemGuardarActionPerformed
 
+    /**
+     * 
+     * @param evt 
+     */
     private void itemCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemCerrarActionPerformed
         // TODO add your handling code here:
         PestanaInterna aux=(PestanaInterna)Pestanas.getSelectedComponent();
         int posicion=Pestanas.getSelectedIndex();
         if(aux.getTxtEntrada().equals(" "))
         {
-            
+            Pestanas.remove(posicion);
         }else
         {
-            Pestanas.remove(posicion);
+            int respuesta= JOptionPane.showConfirmDialog(null, "Desea guardar los cambios?");
+            switch (respuesta) {
+                case 0:
+                    itemGuardarActionPerformed(evt);
+                    Pestanas.remove(posicion);
+                    break;
+                case 1:
+                    Pestanas.remove(posicion);
+                    break;
+                case 2:
+                    break;
+                default:
+                    break;
+            }
+            
         }
     }//GEN-LAST:event_itemCerrarActionPerformed
 
+    Data data;
+    private void itemEjecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemEjecutarActionPerformed
+        // TODO add your handling code here:
+        PestanaInterna aux=(PestanaInterna)Pestanas.getSelectedComponent();
+        
+        if(aux.getTxtEntrada().length()!=0 || !aux.getTxtEntrada().equals(""))
+        {
+            Acciones.Compilador e = new Acciones.Compilador();
+            data = new Data();
+            e.analizar(aux.getTxtEntrada(), data);
+            //txtConsola.setText(errores);
+        }else
+        {
+            JOptionPane.showMessageDialog(null, "No existe texto por analizar");
+        }
+    }//GEN-LAST:event_itemEjecutarActionPerformed
+
+    /**
+     * 
+     * @param entrada Parametro de tipo String que contiene los errores de las listas
+     * respectivas
+     */
+    public void mostrarErrores(String entrada)
+    {
+        txtConsola.setText("\n"+entrada);
+    }
+    
     /**
      * Metodo principal
      * @param args the command line arguments
@@ -252,11 +316,14 @@ public class PanelPrincipal extends javax.swing.JFrame {
     private javax.swing.JTabbedPane Pestanas;
     private javax.swing.JMenuItem itemAbrir;
     private javax.swing.JMenuItem itemCerrar;
+    private javax.swing.JMenuItem itemEjecutar;
     private javax.swing.JMenuItem itemGuardar;
     private javax.swing.JMenuItem itemNuevo;
     private javax.swing.JMenuItem itemSalir;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JEditorPane txtConsola;
     // End of variables declaration//GEN-END:variables
 }

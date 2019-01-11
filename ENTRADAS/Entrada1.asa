@@ -1,0 +1,85 @@
+Importar aritmeticas.asa ;
+Importar relacionales.asa ;
+Definir "/home/user1/pictures/reportes";
+
+Vacio Principal(){
+    es_verdadero(a<=1)
+    {
+        mostrar("hola");
+        es_verdadero(a<=1)
+        {
+            mostrar("hola");
+        }es_falso
+        {
+            mostrar("es Falso");
+            romper;
+        }
+    }es_falso
+    {
+        entero a=16*50-5;
+        mostrar("es Falso");
+    }
+}
+
+
+Decimal a, b, c = 45.8;
+Caracter a='a';
+entero valo='a'+3;
+texto str1 = "mundo";
+b=6*8+3+"hola";
+a=-5;
+
+Texto Saludame(entero num, texto bandera){
+    a=16;
+    Retorno "Hola" + nombre + "!!!";
+}
+
+
+Texto Saludame(){
+    a=10;
+    Retorno "Hola" + nombre + "!!!";
+}
+
+Vacio Saludame(){
+    a=16;
+    Pintar("entrada", 16,20,16.5,'caracter').dibujo().hola("hola").num('16');
+    Retorno;
+}
+
+Cambiar_A ( num * 2 ) {
+    Valor "hola": Mostrar("El doble de vas es 10");
+    -->Valor 10 : Mostrar("El doble de vas es 10");
+-->Valor 100: Mostrar("El doble de vas es 10");
+    
+    No_Cumple : Mostrar("No se cuanto es el doble de 'val1'");
+    -->No_cumple : mostrar("hola");
+    
+    Hasta_que(i ==10)
+    {
+	es_verdadero(i>10)
+            {
+		i = i - 1;
+		Mostrar("Decrementando i, {0}", i);
+            }es_falso
+            {
+		i = i+1;
+		Mostrar("Incrementando i, {0}", i);
+            }
+            
+            Para(entero i=1; i < 11; ++)
+            {
+                Mostrar("5 x {0} = {1}s", i, 5*i);
+            }
+    }
+    
+    Mientras_que(hayVida)
+    {
+        Mostrar("Hay esperanza de ganar Compi1");
+    }
+    
+}
+
+Pintar("entrada", 16).dibujo().hola("hola").num('16');
+DibujarEXP( 45*2+"hola" );
+DibujarTS();
+DibujarAST( factorial );
