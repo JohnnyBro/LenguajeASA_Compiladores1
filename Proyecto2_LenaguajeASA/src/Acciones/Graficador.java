@@ -18,13 +18,13 @@ public class Graficador
     public Graficador()
     {
         ////Creo una carpeta en /home/usuario/SalidasDot, en donde va estar todo
-        File folder = new File(System.getProperty("user.home") + File.separator +"SalidasDot");        
+        File folder = new File(System.getProperty("user.home") + File.separator +"SalidasDot_Pro2");        
         if(!folder.exists())
             folder.mkdirs();
         
         //Rutas para el .dot y la imagen .png
-        ruta_dot = System.getProperty("user.home") + File.separator +"SalidasDot"+File.separator+"ast.dot"; 
-        ruta_png = System.getProperty("user.home") + File.separator +"SalidasDot"+File.separator+"ast.png"; 
+        ruta_dot = System.getProperty("user.home") + File.separator +"SalidasDot_Pro2"+File.separator+"ast.dot"; 
+        ruta_png = System.getProperty("user.home") + File.separator +"SalidasDot_Pro2"+File.separator+"ast.png"; 
     }    
     
     public void graficarAST(Nodo raiz)
@@ -70,7 +70,7 @@ public class Graficador
     {
         contador=0;
         StringBuffer buffer=new StringBuffer();
-        buffer.append("\ndigraph G {\r\nnode [shape=doublecircle, style=filled, color=khaki1, fontcolor=black];\n");        
+        buffer.append("\ndigraph G {\r\nnode [shape=rectangle, style=filled, color=khaki1, fontcolor=black];\n");        
         this.listarNodos(raiz, buffer);
         this.enlazarNodos(raiz, buffer);        
         buffer.append("}");        
