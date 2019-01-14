@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author joaquin
+ * @author johnnybravo
  */
 public class Graficador
 {
@@ -17,7 +17,7 @@ public class Graficador
     
     public Graficador()
     {
-        ////Creo una carpeta en /home/usuario/SalidasDot, en donde va estar todo
+        ////Creo una carpeta en /home/usuario/SalidasDot_Pro2, en donde va estar todo
         File folder = new File(System.getProperty("user.home") + File.separator +"SalidasDot_Pro2");        
         if(!folder.exists())
             folder.mkdirs();
@@ -66,6 +66,10 @@ public class Graficador
         return "dot";
     }
     
+    /**
+     * 
+     * @param raiz es la raiz que viene del analisis sintactico.
+     */
     private void armar_Cuerpo_dot(Nodo raiz)
     {
         contador=0;

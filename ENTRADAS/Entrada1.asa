@@ -40,7 +40,13 @@ Texto Saludame(){
     Retorno "Hola" + nombre + "!!!";
 }
 
-Vacio Saludame(){
+Vacio Metodo1(){
+    a=16;
+    Pintar("entrada", 16,20,16.5,'caracter').dibujo().hola("hola").num('16');
+    Retorno;
+}
+
+Vacio Metodo1(entero num, texto bandera){
     a=16;
     Pintar("entrada", 16,20,16.5,'caracter').dibujo().hola("hola").num('16');
     Retorno;

@@ -4,6 +4,7 @@ import Analizadores.Lexico;
 import Analizadores.Nodo;
 import Analizadores.Sintactico;
 import GUI.PanelPrincipal;
+import Interprete.Interprete;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.logging.Level;
@@ -12,7 +13,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author joaquin
+ * @author johnnybravo
  */
 public class Compilador
 {
@@ -33,16 +34,23 @@ public class Compilador
         analizador_lexico.lista_errores = d.lista_errores;
         analizador_sintactico.lista_errores = d.lista_errores;
         
-        try
+            try
         {
             analizador_sintactico.parse();
             d.raiz = analizador_sintactico.raiz;
+            Interprete inter = new Interprete(d.raiz);
+            //Graficador g= new Graficador();
+            //g.graficarAST(d.raiz);
+           
         }
         catch (Exception ex)
         {
             Logger.getLogger(Compilador.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("! ============================================================ Analisis Abortado");
             JOptionPane.showMessageDialog(null,"Analisis abortado","Proyecto 2 - JFLex/Cup y AST",JOptionPane.ERROR_MESSAGE);
+            
+            GUI.PanelPrincipal panel=new PanelPrincipal();
+            
             return;
         }
         if(analizador_lexico.lista_errores.size()==0 && analizador_sintactico.lista_errores.size()==0)
@@ -56,23 +64,23 @@ public class Compilador
             int l1=analizador_lexico.lista_errores.size();
             int l2=analizador_sintactico.lista_errores.size();
             
-            if(l1>0)
-            {
-                for(int i=0; i<l1;i++)
-                {
-                     panel.mostrarErrores(analizador_lexico.lista_errores.get(i).tipo+"**** "+analizador_lexico.lista_errores.get(i).lexema+" "+
-                     analizador_lexico.lista_errores.get(i).linea+" "+analizador_lexico.lista_errores.get(i).columna+" "+analizador_lexico.lista_errores.get(i).descripcion);
-                }
-            }
-            
-            if(l2>0)
-            {
-                for(int i=0; i<l2;i++)
-                {
-                    panel.mostrarErrores(analizador_sintactico.lista_errores.get(i).tipo+" "+analizador_sintactico.lista_errores.get(i).lexema+" "+
-                     analizador_sintactico.lista_errores.get(i).linea+" "+analizador_sintactico.lista_errores.get(i).columna+" "+analizador_sintactico.lista_errores.get(i).descripcion);
-                }
-            }
+//            if(l1>0)
+//            {
+//                for(int i=0; i<l1;i++)
+//                {
+//                     panel.mostrarErrores(analizador_lexico.lista_errores.get(i).tipo+"**** "+analizador_lexico.lista_errores.get(i).lexema+" "+
+//                     analizador_lexico.lista_errores.get(i).linea+" "+analizador_lexico.lista_errores.get(i).columna+" "+analizador_lexico.lista_errores.get(i).descripcion);
+//                }
+//            }
+//            
+//            if(l2>0)
+//            {
+//                for(int i=0; i<l2;i++)
+//                {
+//                    panel.mostrarErrores(analizador_sintactico.lista_errores.get(i).tipo+" "+analizador_sintactico.lista_errores.get(i).lexema+" "+
+//                     analizador_sintactico.lista_errores.get(i).linea+" "+analizador_sintactico.lista_errores.get(i).columna+" "+analizador_sintactico.lista_errores.get(i).descripcion);
+//                }
+//            }
             
             return;
         }

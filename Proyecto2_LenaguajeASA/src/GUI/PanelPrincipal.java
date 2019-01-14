@@ -6,10 +6,12 @@
 package GUI;
 
 import Acciones.*;
+import Interprete.Interprete;
 import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 import java.awt.Component;
 import java.awt.event.ComponentListener;
 import java.io.File;
+import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -259,6 +261,7 @@ public class PanelPrincipal extends javax.swing.JFrame {
             Acciones.Compilador e = new Acciones.Compilador();
             data = new Data();
             e.analizar(aux.getTxtEntrada(), data);
+            
             //txtConsola.setText(errores);
         }else
         {
@@ -271,9 +274,16 @@ public class PanelPrincipal extends javax.swing.JFrame {
      * @param entrada Parametro de tipo String que contiene los errores de las listas
      * respectivas
      */
-    public void mostrarErrores(String entrada)
+    public void mostrarErrores(ArrayList<ErrorT> lista)
     {
-        txtConsola.setText("\n"+entrada);
+        //txtConsola.setText("\n"+entrada);
+        if( !lista.isEmpty())
+        {
+            JOptionPane.showMessageDialog(null, "HAY ERRORES");
+        }else
+        {
+            JOptionPane.showMessageDialog(null, "NO HAY ERRORES");
+        }
     }
     
     /**

@@ -2,7 +2,7 @@ package Acciones;
 
 /**
  *
- * @author joaquin
+ * @author johnnybravo
  */
 public class ErrorT
 {

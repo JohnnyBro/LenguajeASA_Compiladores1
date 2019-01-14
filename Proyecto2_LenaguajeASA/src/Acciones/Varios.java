@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author joaquin
+ * @author johnnybravo
  */
 public class Varios
 {
@@ -28,6 +28,11 @@ public class Varios
         }
     }
     
+    /**
+     * 
+     * @param pfichero contiene la ruta del archivo
+     * @param pcontenido contiene la informacion del archivo que esta creando
+     */
     public synchronized void creararchivo(String pfichero,String pcontenido)
     {   
         FileWriter archivo = null;

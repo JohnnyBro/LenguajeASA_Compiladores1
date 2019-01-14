@@ -34,7 +34,7 @@ import Acciones.ErrorT;
 digito = [0-9]
 numero = {digito}+("." {digito}+)?
 tstring = "\"" ~"\""
-tchar = "'" ~"'"
+//tchar = "'" ~"'"
 letra = [a-zA-ZñÑ]
 id = {letra}+({letra}|{digito}|"_")*
 
@@ -66,7 +66,7 @@ id = {letra}+({letra}|{digito}|"_")*
 <YYINITIAL> "Booleano"		{   return new Symbol(Simbolos.tokBooleano, yycolumn, yyline, yytext());}
 <YYINITIAL> "Texto"			{   return new Symbol(Simbolos.tokTexto, yycolumn, yyline, yytext());}
 <YYINITIAL> "Entero"		{   return new Symbol(Simbolos.tokEntero, yycolumn, yyline, yytext());}
-<YYINITIAL> "Caracter"		{   return new Symbol(Simbolos.tokCaracter, yycolumn, yyline, yytext());}
+//<YYINITIAL> "Caracter"		{   return new Symbol(Simbolos.tokCaracter, yycolumn, yyline, yytext());}
 <YYINITIAL> "Vacio"			{   return new Symbol(Simbolos.tokVacio, yycolumn, yyline, yytext());}
 <YYINITIAL> "Retorno"		{   return new Symbol(Simbolos.tokRetorno, yycolumn, yyline, yytext());}
 <YYINITIAL> "Es_verdadero"	{   return new Symbol(Simbolos.tokEsVerdadero, yycolumn, yyline, yytext());}
@@ -119,7 +119,7 @@ id = {letra}+({letra}|{digito}|"_")*
 
 <YYINITIAL> {numero}    {   return new Symbol(Simbolos.tokNumero, yycolumn, yyline, yytext());}
 <YYINITIAL> {tstring}   {   return new Symbol(Simbolos.tokString, yycolumn, yyline, yytext());}
-<YYINITIAL> {tchar}     {   return new Symbol(Simbolos.tokChar, yycolumn, yyline, yytext());}
+//<YYINITIAL> {tchar}     {   return new Symbol(Simbolos.tokChar, yycolumn, yyline, yytext());}
 <YYINITIAL> {id}        {   return new Symbol(Simbolos.tokId, yycolumn, yyline, yytext());}
 
 //-------> Espacios

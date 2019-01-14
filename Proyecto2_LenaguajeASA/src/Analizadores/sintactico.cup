@@ -22,8 +22,8 @@ parser code
     public void syntax_error(Symbol s)
     {        
         String lexema = s.value.toString();
-        int fila = s.right;
-        int columna = s.left;
+        int fila = s.right+1;
+        int columna = s.left+1;
         
         System.out.println("!!!!!!! Error Sintactico Recuperado !!!!!!!");
         System.out.println("\t\tLexema: "+lexema);
@@ -37,8 +37,8 @@ parser code
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception
     {        
         String lexema = s.value.toString();
-        int fila = s.right;
-        int columna = s.left;
+        int fila = s.right+1;
+        int columna = s.left+1;
         
         System.out.println("!!!!!!! Error Sintactico, Panic Mode !!!!!!! ");
         System.out.println("\t\tLexema: "+lexema);
@@ -61,6 +61,7 @@ parser code
 //-------------------> Codigo para las acciones gramaticales
 action code
 {:
+//public Nodo raiz;
 :}  
 
 
@@ -71,14 +72,14 @@ action code
 //-------------------> Declaración de Terminales
 //-------------------> se les puede indicar x tipo
 //-------------------> numero es string porque me interesa el valor lexico que trae
-terminal String tokImportar, tokDefinir, tokDecimal, tokBooleano, tokTexto, tokEntero, tokCaracter, tokVacio;
+terminal String tokImportar, tokDefinir, tokDecimal, tokBooleano, tokTexto, tokEntero, /*tokCaracter,*/ tokVacio;
 terminal String tokRetorno, tokEsVerdadero, tokEsFalso, tokCambiarA, tokNoCumple, tokValor, tokPara;
 terminal String tokHastaQue, tokMientrasQue, tokRomper, tokContinuar, tokMostrar, tokDibujarAST, tokDibujarExp;
 terminal String tokDibujarTS, tokVerdadero, tokFalso, tokPrincipal, tokOr, tokAnd, tokNot, tokMas, tokMasMas;
 terminal String tokMenos, tokMenosMenos, tokPor, tokDiv, tokModulo, tokPotencia, tokIgual, tokIgualIgual;
 terminal String tokDiferente, tokMayor, tokMenor, tokMayorIgual, tokMenorIgual, tokApar, tokCpar, tokAlla;
 terminal String tokClla, tokPcoma, tokDosp, tokComa, tokPunto, tokExtension;
-terminal String tokNumero, tokString, tokChar, tokId;
+terminal String tokNumero, tokString, /*tokChar,*/ tokId;
 
 
 
@@ -89,10 +90,11 @@ non terminal Nodo ENCABEZADOS, ENCABEZADO, SENTS, SENT, IMPORTAR, DEFINIR, TIPO,
 non terminal Nodo DECLARACION, ASIGNACION, LID, EXP, LEXP, METODO, FUNCION;
 non terminal Nodo FRETORNO, MRETORNO, PARAMETROS, PARAMETRO, LLAMADA, LLAMAR, ROMPER, CONTINUAR;
 non terminal Nodo PARAMETROSIN, PARAMETROIN, MOSTRAR, DIBUJAR_AST, DIBUJAR_EXP, DIBUJAR_TS;
-non terminal Nodo ES_VERDADERO, CAMBIAR_A, VALORES, VALOR, TIPODATO, PARA, ASIG_PARA, INCRE_DECRE;
-non terminal Nodo HASTA_QUE, MIENTRAS_QUE, MSENTS, MSENT, FSENTS, FSENT;
+non terminal Nodo TIPODATO, ASIG_PARA, INCRE_DECRE;
+non terminal Nodo MSENTS, MSENT, FSENTS, FSENT;
 non terminal Nodo MES_VERDADERO, MCAMBIAR_A, MPARA, MHASTA_QUE, MMIENTRAS_QUE, MVALORES, MVALOR; 
 non terminal Nodo FES_VERDADERO, FCAMBIAR_A, FPARA, FHASTA_QUE, FMIENTRAS_QUE, FVALORES, FVALOR;
+//non terminal Nodo ES_VERDADERO, CAMBIAR_A, HASTA_QUE, MIENTRAS_QUE, VALORES, VALOR, PARA;
 
 
 //-------------------> Indicar precedencia(de menor a mayor) y asociatividad
@@ -119,11 +121,12 @@ start with INICIO;
 
 INICIO::=       ENCABEZADOS:encs SENTS:sents
                 {:
-                    Nodo aux=new Nodo("Inicio");
+                    Nodo aux=new Nodo("INICIO");
                     aux.hijos.add(encs);
                     aux.hijos.add(sents);
-                    Graficador g=new Graficador();
-                    g.graficarAST(aux);
+                    this.parser.raiz=aux;
+                    //Graficador g=new Graficador();
+                    //g.graficarAST(aux);
                 :}
 
                 ;
@@ -187,20 +190,20 @@ SENT::=         DECLARACION:dec tokPcoma        {: RESULT = dec; :}
                 | PRINCIPAL:princi              {: RESULT = princi; :}
                 | METODO:metodo                 {: RESULT = metodo; :}
                 | FUNCION:funcion               {: RESULT = funcion; :}
-                | ES_VERDADERO:esVerdad         {: RESULT = esVerdad; :}
-                | CAMBIAR_A:cambiar             {: RESULT = cambiar; :}
-                | PARA:para                     {: RESULT = para; :}
-                | HASTA_QUE:hasta               {: RESULT = hasta; :}
-                | MIENTRAS_QUE:mientras         {: RESULT = mientras; :}
-                | MOSTRAR:mostrar tokPcoma      {: RESULT = mostrar; :}
-                | LLAMADA:llamada tokPcoma      {: RESULT = llamada; :}
-                | ROMPER:romper                 {: RESULT = romper; :}
-                | CONTINUAR:continuar           {: RESULT = continuar; :}
-                | FRETORNO:fret                 {: RESULT = fret; :}
-                | MRETORNO:mret                 {: RESULT = mret; :}
-                | DIBUJAR_AST:dibAST tokPcoma   {: RESULT = dibAST; :}
-                | DIBUJAR_EXP:dibEXP tokPcoma   {: RESULT = dibEXP; :}
-                | DIBUJAR_TS:dibTS tokPcoma     {: RESULT = dibTS; :}
+                //| ES_VERDADERO:esVerdad         {: RESULT = esVerdad; :}
+                //| CAMBIAR_A:cambiar             {: RESULT = cambiar; :}
+                //| PARA:para                     {: RESULT = para; :}
+                //| HASTA_QUE:hasta               {: RESULT = hasta; :}
+                //| MIENTRAS_QUE:mientras         {: RESULT = mientras; :}
+                //| MOSTRAR:mostrar tokPcoma      {: RESULT = mostrar; :}
+                //| LLAMADA:llamada tokPcoma      {: RESULT = llamada; :}
+                //| ROMPER:romper                 {: RESULT = romper; :}
+                //| CONTINUAR:continuar           {: RESULT = continuar; :}
+                //| FRETORNO:fret                 {: RESULT = fret; :}
+                //| MRETORNO:mret                 {: RESULT = mret; :}
+                //| DIBUJAR_AST:dibAST tokPcoma   {: RESULT = dibAST; :}
+                //| DIBUJAR_EXP:dibEXP tokPcoma   {: RESULT = dibEXP; :}
+                //| DIBUJAR_TS:dibTS tokPcoma     {: RESULT = dibTS; :}
                 | error tokPcoma
                 | error tokClla  
                 ;
@@ -210,7 +213,7 @@ MSENTS::=        MSENTS:msents MSENT:msent
                 {: msents.hijos.add(msent); RESULT = msents; :}
                 | MSENT:msent
                 {:
-                    Nodo aux = new Nodo("MSENTS");
+                    Nodo aux = new Nodo("SENTS");
                     aux.hijos.add(msent);
                     RESULT = aux;
                 :}
@@ -240,7 +243,7 @@ FSENTS::=       FSENTS:fsents FSENT:fsent
                 {: fsents.hijos.add(fsent); RESULT = fsents; :}
                 | FSENT:fsent
                 {:
-                    Nodo aux=new Nodo("FSENTS");
+                    Nodo aux=new Nodo("SENTS");
                     aux.hijos.add(fsent);
                     RESULT = aux;
                 :}
@@ -266,15 +269,15 @@ FSENT::=       DECLARACION:dec tokPcoma         {: RESULT = dec; :}
                 ;                
 
 TIPO::=         tokDecimal
-                {: RESULT = new Nodo("Decimal"); :}
+                {: RESULT = new Nodo("DECIMAL"); :}
                 | tokBooleano
-                {: RESULT = new Nodo("Booleano"); :}
+                {: RESULT = new Nodo("BOOLEANO"); :}
                 | tokTexto
-                {: RESULT = new Nodo("Texto"); :}
+                {: RESULT = new Nodo("TEXTO"); :}
                 | tokEntero
-                {: RESULT = new Nodo("Entero"); :}
-                | tokCaracter
-                {: RESULT = new Nodo("Caracter"); :}
+                {: RESULT = new Nodo("ENTERO"); :}
+                //| tokCaracter
+                //{: RESULT = new Nodo("CARACTER"); :}
                 ;
 
 LID::=          LID:lid tokComa tokId:id
@@ -332,7 +335,7 @@ EXP::=          EXP:a tokMas EXP:b          {: Nodo aux=new Nodo("EXP"); aux.hij
                 | tokNumero:num             {: Nodo aux = new Nodo("EXP"); aux.hijos.add(new Nodo(num)); RESULT = aux; :}
                 | tokModulo:mod             {: Nodo aux = new Nodo("EXP"); aux.hijos.add(new Nodo(mod)); RESULT = aux; :}
                 | tokString:cadena          {: String aux=cadena; aux=aux.replaceAll("\"",""); RESULT = new Nodo(aux); :}
-                | tokChar:caracter          {: String aux=caracter; aux=aux.replaceAll("\'",""); RESULT = new Nodo(aux); :}                
+                //| tokChar:caracter          {: String aux=caracter; aux=aux.replaceAll("\'",""); RESULT = new Nodo(aux); :}                
                 | tokMenos EXP:a            {: Nodo aux=new Nodo("EXP"); aux.hijos.add(new Nodo("-")); aux.hijos.add(a); RESULT = aux; :}
                 | tokVerdadero:verdadero    {: Nodo aux = new Nodo("EXP"); aux.hijos.add(new Nodo(verdadero)); RESULT = aux; :}
                 | tokFalso:falso            {: Nodo aux = new Nodo("EXP"); aux.hijos.add(new Nodo(falso)); RESULT = aux; :}
@@ -343,8 +346,8 @@ EXP::=          EXP:a tokMas EXP:b          {: Nodo aux=new Nodo("EXP"); aux.hij
 PRINCIPAL::=    tokVacio tokPrincipal tokApar tokCpar tokAlla MSENTS:msents tokClla
                 {:
                     Nodo aux=new Nodo("PRINCIPAL");
-                    aux.hijos.add(new Nodo("vacio"));
-                    aux.hijos.add(new Nodo("Principal"));
+                    aux.hijos.add(new Nodo("VACIO"));
+                    aux.hijos.add(new Nodo("PRINCIPAL"));
                     aux.hijos.add(msents);
                     RESULT = aux;
                 :}
@@ -469,59 +472,59 @@ PARAMETROIN::=  EXP:exp
                 ;
 
 //SENTENCIAS DE CONTROL GENERALES**************************
-ES_VERDADERO::= tokEsVerdadero tokApar EXP:exp tokCpar tokAlla SENTS:sents tokClla
-                {:
-                    Nodo aux = new Nodo("ES_VERDADERO");
-                    aux.hijos.add(exp);
-                    aux.hijos.add(sents);
-                    RESULT = aux;
-                :}
-                | tokEsVerdadero tokApar EXP:exp tokCpar tokAlla SENTS:sents tokClla tokEsFalso tokAlla SENTS:sents2 tokClla
-                {:
-                    Nodo aux = new Nodo("ES_VERDADERO");
-                    aux.hijos.add(exp);
-                    aux.hijos.add(sents);
-                    //aux.hijos.add(new Nodo("ES_FALSO"));
-                    aux.hijos.add(sents2);
-                    RESULT = aux;
-                :}
-                ;
+//ES_VERDADERO::= tokEsVerdadero tokApar EXP:exp tokCpar tokAlla SENTS:sents tokClla
+//                {:
+//                    Nodo aux = new Nodo("ES_VERDADERO");
+//                    aux.hijos.add(exp);
+//                    aux.hijos.add(sents);
+//                    RESULT = aux;
+//                :}
+//                | tokEsVerdadero tokApar EXP:exp tokCpar tokAlla SENTS:sents tokClla tokEsFalso tokAlla SENTS:sents2 tokClla
+//                {:
+//                    Nodo aux = new Nodo("ES_VERDADERO");
+//                    aux.hijos.add(exp);
+//                    aux.hijos.add(sents);
+//                    //aux.hijos.add(new Nodo("ES_FALSO"));
+//                    aux.hijos.add(sents2);
+//                    RESULT = aux;
+//                :}
+//                ;
 
-CAMBIAR_A::=    tokCambiarA tokApar EXP:exp tokCpar tokAlla VALORES:valores tokClla
-                {:
-                    Nodo aux = new Nodo("CAMBIAR_A");
-                    aux.hijos.add(exp);
-                    aux.hijos.add(valores);
-                    RESULT = aux; 
-                :}
-                | tokCambiarA tokApar EXP:exp tokCpar tokAlla VALORES:valores tokNoCumple tokDosp SENTS:sents tokClla
-                {:
-                    Nodo aux = new Nodo("CAMBIAR_A");
-                    aux.hijos.add(exp);
-                    aux.hijos.add(valores);
-                    aux.hijos.add(sents);
-                    RESULT = aux;
-                :}
-                ;
+//CAMBIAR_A::=    tokCambiarA tokApar EXP:exp tokCpar tokAlla VALORES:valores tokClla
+//                {:
+//                    Nodo aux = new Nodo("CAMBIAR_A");
+//                    aux.hijos.add(exp);
+//                    aux.hijos.add(valores);
+//                    RESULT = aux; 
+//                :}
+//                | tokCambiarA tokApar EXP:exp tokCpar tokAlla VALORES:valores tokNoCumple tokDosp SENTS:sents tokClla
+//                {:
+//                    Nodo aux = new Nodo("CAMBIAR_A");
+//                    aux.hijos.add(exp);
+//                    aux.hijos.add(valores);
+//                    aux.hijos.add(sents);
+//                    RESULT = aux;
+//                :}
+//                ;
 
-VALORES::=      VALORES:valores VALOR:valor
-                {: valores.hijos.add(valor); RESULT = valores; :} 
-                | VALOR:valor
-                {:
-                    Nodo aux = new Nodo("VALORES");
-                    aux.hijos.add(valor);
-                    RESULT = aux;
-                :} 
-                ;
+//VALORES::=      VALORES:valores VALOR:valor
+//                {: valores.hijos.add(valor); RESULT = valores; :} 
+//                | VALOR:valor
+//                {:
+//                    Nodo aux = new Nodo("VALORES");
+//                    aux.hijos.add(valor);
+//                    RESULT = aux;
+//                :} 
+//                ;
 
-VALOR::=        tokValor TIPODATO:tipo tokDosp SENTS:sents
-                {:
-                    Nodo aux = new Nodo("VALOR");
-                    aux.hijos.add(tipo);
-                    aux.hijos.add(sents);
-                    RESULT = aux; 
-                :} 
-                ;
+//VALOR::=        tokValor TIPODATO:tipo tokDosp SENTS:sents
+//                {:
+//                    Nodo aux = new Nodo("VALOR");
+//                    aux.hijos.add(tipo);
+//                    aux.hijos.add(sents);
+//                    RESULT = aux; 
+//                :} 
+//                ;
 
 TIPODATO::=     tokNumero:num
                 {: RESULT = new Nodo(num); :}
@@ -533,26 +536,33 @@ TIPODATO::=     tokNumero:num
                 :}
                 ;
 
-PARA::=         tokPara tokApar ASIG_PARA:asig tokPcoma EXP:exp tokPcoma INCRE_DECRE:inc tokCpar tokAlla SENTS:sents tokClla
-                {:
-                    Nodo aux = new Nodo("PARA");
-                    aux.hijos.add(asig);
-                    aux.hijos.add(exp);
-                    aux.hijos.add(inc);
-                    aux.hijos.add(sents);
-                    RESULT = aux;
-                :}
-                ;
+//PARA::=         tokPara tokApar ASIG_PARA:asig tokPcoma EXP:exp tokPcoma INCRE_DECRE:inc tokCpar tokAlla SENTS:sents tokClla
+//                {:
+//                    Nodo aux = new Nodo("PARA");
+//                    aux.hijos.add(asig);
+//                    aux.hijos.add(exp);
+//                    aux.hijos.add(inc);
+//                    aux.hijos.add(sents);
+//                    RESULT = aux;
+//                :}
+//                ;
 
 ASIG_PARA::=    tokEntero tokId:id tokIgual EXP:exp
                 {:
                     Nodo aux = new Nodo("ASIG_PARA");
-                    aux.hijos.add(new Nodo("Entero"));
+                    aux.hijos.add(new Nodo("ENTERO"));
                     aux.hijos.add(new Nodo(id));
                     aux.hijos.add(exp);
                     RESULT = aux;
                 :}
-                | tokDecimal tokId tokIgual EXP:exp
+                | tokDecimal tokId:id tokIgual EXP:exp
+                {:
+                    Nodo aux = new Nodo("ASIG_PARA");
+                    aux.hijos.add(new Nodo("DECIMAL"));
+                    aux.hijos.add(new Nodo(id));
+                    aux.hijos.add(exp);
+                    RESULT = aux;
+                :}
                 ;
 
 INCRE_DECRE::=  tokMasMas
@@ -561,23 +571,23 @@ INCRE_DECRE::=  tokMasMas
                 {: RESULT = new Nodo("--"); :}
                 ;
 
-HASTA_QUE::=    tokHastaQue tokApar EXP:exp tokCpar tokAlla SENTS:sents tokClla
-                {:
-                    Nodo aux = new Nodo("HASTA_QUE");
-                    aux.hijos.add(exp);
-                    aux.hijos.add(sents);
-                    RESULT = aux; 
-                :}
-                ;
+//HASTA_QUE::=    tokHastaQue tokApar EXP:exp tokCpar tokAlla SENTS:sents tokClla
+//                {:
+//                    Nodo aux = new Nodo("HASTA_QUE");
+//                    aux.hijos.add(exp);
+//                    aux.hijos.add(sents);
+//                    RESULT = aux; 
+//                :}
+//                ;
 
-MIENTRAS_QUE::= tokMientrasQue tokApar EXP:exp tokCpar tokAlla SENTS:sents tokClla
-                {:
-                    Nodo aux = new Nodo("MIENTRAS_QUE");
-                    aux.hijos.add(exp);
-                    aux.hijos.add(sents);
-                    RESULT = aux; 
-                :}
-                ;
+//MIENTRAS_QUE::= tokMientrasQue tokApar EXP:exp tokCpar tokAlla SENTS:sents tokClla
+//                {:
+//                    Nodo aux = new Nodo("MIENTRAS_QUE");
+//                    aux.hijos.add(exp);
+//                    aux.hijos.add(sents);
+//                    RESULT = aux; 
+//                :}
+//                ;
 
 MOSTRAR::=      tokMostrar tokApar LEXP:lexp tokCpar
                 {:
