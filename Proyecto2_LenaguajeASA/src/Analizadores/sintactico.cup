@@ -321,6 +321,7 @@ EXP::=          EXP:a tokMas EXP:b          {: Nodo aux=new Nodo("EXP"); aux.hij
                 | EXP:a tokMenos EXP:b      {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("-")); aux.hijos.add(b); RESULT = aux; :}
                 | EXP:a tokPor EXP:b        {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("*")); aux.hijos.add(b); RESULT = aux; :}
                 | EXP:a tokDiv EXP:b        {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("/")); aux.hijos.add(b); RESULT = aux; :}
+                | EXP:a tokModulo EXP:b     {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("%")); aux.hijos.add(b); RESULT = aux; :}
                 | EXP:a tokPotencia EXP:b   {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("^")); aux.hijos.add(b); RESULT = aux; :}
                 | EXP:a tokOr EXP:b         {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("||")); aux.hijos.add(b); RESULT = aux; :}
                 | EXP:a tokAnd EXP:b        {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("&&")); aux.hijos.add(b); RESULT = aux; :}
@@ -333,7 +334,7 @@ EXP::=          EXP:a tokMas EXP:b          {: Nodo aux=new Nodo("EXP"); aux.hij
                 | EXP:a tokMenor EXP:b      {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("<")); aux.hijos.add(b); RESULT = aux; :}
                 | tokApar EXP:a tokCpar     {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); :}
                 | tokNumero:num             {: Nodo aux = new Nodo("EXP"); aux.hijos.add(new Nodo(num)); RESULT = aux; :}
-                | tokModulo:mod             {: Nodo aux = new Nodo("EXP"); aux.hijos.add(new Nodo(mod)); RESULT = aux; :}
+                //| tokModulo:mod             {: Nodo aux = new Nodo("EXP"); aux.hijos.add(new Nodo(mod)); RESULT = aux; :}
                 | tokString:cadena          {: String aux=cadena; aux=aux.replaceAll("\"",""); RESULT = new Nodo(aux); :}
                 //| tokChar:caracter          {: String aux=caracter; aux=aux.replaceAll("\'",""); RESULT = new Nodo(aux); :}                
                 | tokMenos EXP:a            {: Nodo aux=new Nodo("EXP"); aux.hijos.add(new Nodo("-")); aux.hijos.add(a); RESULT = aux; :}
@@ -395,6 +396,7 @@ FUNCION::=      TIPO:tipo tokId:id tokApar PARAMETROS:par tokCpar tokAlla FSENTS
 METODO::=       tokVacio tokId:id tokApar PARAMETROS:par tokCpar tokAlla MSENTS:msents tokClla
                 {:
                     Nodo aux = new Nodo("METODO");
+                    aux.hijos.add("VACIO");
                     aux.hijos.add(new Nodo(id));
                     aux.hijos.add(par);
                     aux.hijos.add(msents);
@@ -403,6 +405,7 @@ METODO::=       tokVacio tokId:id tokApar PARAMETROS:par tokCpar tokAlla MSENTS:
                 | tokVacio tokId:id tokApar tokCpar tokAlla MSENTS:msents tokClla
                 {:
                     Nodo aux = new Nodo("METODO");
+                    aux.hijos.add("VACIO");
                     aux.hijos.add(new Nodo(id));
                     aux.hijos.add(msents);
                     RESULT = aux;

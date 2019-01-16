@@ -7,6 +7,7 @@ import GUI.PanelPrincipal;
 import Interprete.Interprete;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -17,12 +18,14 @@ import javax.swing.JOptionPane;
  */
 public class Compilador
 {
+    public ArrayList<ErrorT> lista_errores;
     
     public void analizar(String entrada, Data d)
     {
         Reader reader = new StringReader(entrada);
         Lexico analizador_lexico =  new Lexico(reader);
         Sintactico analizador_sintactico = new Sintactico(analizador_lexico);
+        
         
         /*Actualizando listas
         como todos los objetos en java son por referencia :D
@@ -33,6 +36,9 @@ public class Compilador
         
         analizador_lexico.lista_errores = d.lista_errores;
         analizador_sintactico.lista_errores = d.lista_errores;
+        lista_errores=d.lista_errores;
+        
+      
         
             try
         {

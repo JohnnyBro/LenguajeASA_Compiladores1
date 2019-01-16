@@ -12,6 +12,7 @@ import java.awt.Component;
 import java.awt.event.ComponentListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -29,6 +30,7 @@ public class PanelPrincipal extends javax.swing.JFrame {
     JFileChooser seleccion=new JFileChooser();
     File archivo;
     GestionArchivo gestion=new GestionArchivo();
+    public static LinkedList<ErrorT> LErrores=new LinkedList<ErrorT>();
     /**
      * Constructor  PanelPrincipal
      */
