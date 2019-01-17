@@ -7,6 +7,7 @@ package Interprete;
 
 import Analizadores.Nodo;
 import Acciones.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import jdk.nashorn.internal.runtime.JSType;
@@ -22,11 +23,13 @@ public class Interprete {
     HashMap<String, Variable> actual;
     Nodo principal;
     int num=0;
-    Compilador comp=new Compilador();
+    public ArrayList<ErrorT> LSemanticos;
+   
     
     
     
-    public Interprete(Nodo raiz) {
+    public Interprete(Nodo raiz, ArrayList<ErrorT> lista) {
+        this.LSemanticos=lista;
         this.lista_metodos = new LinkedList<>();
         this.ambitos = new LinkedList<>();
         aumentar_ambito();
@@ -61,8 +64,6 @@ public class Interprete {
                 }
                 break;
             case "FUNCION":
-                guardar_funcion(raiz);
-                break;
             case "METODO":
                 guardar_metodo(raiz);
                 break;
@@ -78,45 +79,45 @@ public class Interprete {
         }
     }
     
-    private void guardar_funcion(Nodo raiz) {
-        String nombre = raiz.hijos.get(1).valor;
-        String tipo = raiz.hijos.get(0).valor;
-        String nombre_aux=nombre;
-        
-        Metodo nuevo = new Metodo();
-        
-        if (raiz.hijos.size() == 3) {//no trae parametros
-            nuevo.sentencias = raiz.hijos.get(2);
-            
-        } else {
-            for (Nodo a : raiz.hijos.get(2).hijos) {
-                nombre_aux += "_" + a.hijos.get(0).valor;
-
-            }
-            nuevo.Parametros=raiz.hijos.get(2);
-            nuevo.sentencias = raiz.hijos.get(3);
-        }
-        
-        nuevo.nombre_aux=nombre_aux;
-        nuevo.nombre=nombre_aux;
-        nuevo.tipo = tipo;
-        
-        //comparamos
-        boolean flag = true;
-        for(Metodo m:lista_metodos){
-            if(m.nombre.toUpperCase().equals(nombre_aux.toUpperCase())){
-                //activar bandera erro ya existe Metodo
-                ErrorT error=new ErrorT(nombre_aux, "Semantico", "Ya existe un metodo con este nombre");
-                comp.lista_errores.add(error);
-                flag=false;
-                break;
-            }
-        }
-        
-        if(flag){
-            lista_metodos.add(nuevo);
-        }
-    }
+//    private void guardar_funcion(Nodo raiz) {
+//        String nombre = raiz.hijos.get(1).valor;
+//        String tipo = raiz.hijos.get(0).valor;
+//        String nombre_aux=nombre;
+//        
+//        Metodo nuevo = new Metodo();
+//        
+//        if (raiz.hijos.size() == 3) {//no trae parametros
+//            nuevo.sentencias = raiz.hijos.get(2);
+//            
+//        } else {
+//            for (Nodo a : raiz.hijos.get(2).hijos) {
+//                nombre_aux += "_" + a.hijos.get(0).valor;
+//
+//            }
+//            nuevo.Parametros=raiz.hijos.get(2);
+//            nuevo.sentencias = raiz.hijos.get(3);
+//        }
+//        
+//        nuevo.nombre_aux=nombre_aux;
+//        nuevo.nombre=nombre_aux;
+//        nuevo.tipo = tipo;
+//        
+//        //comparamos
+//        boolean flag = true;
+//        for(Metodo m:lista_metodos){
+//            if(m.nombre.toUpperCase().equals(nombre_aux.toUpperCase())){
+//                //activar bandera erro ya existe Metodo
+//                ErrorT error=new ErrorT(nombre_aux, "Semantico", "Ya existe un metodo con este nombre");
+//                comp.lista_errores.add(error);
+//                flag=false;
+//                break;
+//            }
+//        }
+//        
+//        if(flag){
+//            lista_metodos.add(nuevo);
+//        }
+//    }
 
     
     private void guardar_metodo(Nodo raiz) {
@@ -187,6 +188,7 @@ public class Interprete {
         Object res=evaluar_expresion(raiz.hijos.get(2));
         String tipo_var = retornar_tipo_nombre(res);
         
+        
         if(tipo.equals(tipo_var)){
             for(Nodo a:raiz.hijos.get(1).hijos){
                 guardar_variable(tipo,a.valor,res);
@@ -213,34 +215,37 @@ public class Interprete {
 
     private int retornar_tipo(Object res) {
         //get_object_type
-        return -1;
+         switch(res.getClass().getTypeName())
+        {
+            case "java.lang.Integer":
+                return 3;
+            case "java.lang.Double":
+                return 2;
+            case "java.lang.String":
+                return 1;
+            case "java.lang.Boolean":
+                return 4;
+            default:
+                return -1;
+        }
     }
 
     private String retornar_tipo_nombre(Object res) {
+        String nombre = res.getClass().getTypeName();
         
-       if(this.isNumeric((String)res))
-       {
-           if(this.esEntero((String)res))
-           {
-               return "ENTERO";
-           }else
-           {
-               return "DECIMAL";
-           }
-               
-       }else
-       {
-           switch((String)res)
-           {
-               case "FALSO":
-                   return "BOOLEANO";
-               case "VERDADERO":
-                   return "BOOLEANO";
-               default:
-                   return "TEXTO";
-           }
-       }
-       //return "-1";
+        switch(res.getClass().getTypeName())
+        {
+            case "java.lang.Integer":
+                return "ENTERO";
+            case "java.lang.Double":
+                return "DECIMAL";
+            case "java.lang.String":
+                return "TEXTO";
+            case "java.lang.Boolean":
+                return "BOOLEANO";
+            default:
+                return "-1";
+        }
     }
 
     private void guardar_variable(String tipo,String valor, Object res) {
@@ -268,490 +273,13 @@ public class Interprete {
             case 3:
                 switch(raiz.hijos.get(1).valor)
                 {
-                    case "+":
-                        String val1=(String)evaluar_expresion(raiz.hijos.get(0));
-                        String val2=(String)evaluar_expresion(raiz.hijos.get(2));
-                        
-                        if(isNumeric(val1)==true && isNumeric(val2)==true)
-                        {
-                            double v1=Double.parseDouble(val1);
-                            double v2=Double.parseDouble(val2);
-                            return v1+v2;
-                        }else if(isNumeric(val1)==true && isNumeric(val2)==false)
-                        {
-                            if(val2.compareToIgnoreCase("falso")==0)
-                            {
-                                double v1=Double.parseDouble(val1);
-                                return v1;
-                            }else if(val2.compareToIgnoreCase("verdadero")==0)
-                            {
-                                double v1=Double.parseDouble(val1);
-                                return v1+1;
-                            }else
-                            {
-                                return val1+val2;
-                            }
-                        }else if(isNumeric(val1)==false && isNumeric(val2)==true)
-                        {
-                            if(val1.compareToIgnoreCase("falso")==0)
-                            {
-                                double v2=Double.parseDouble(val2);
-                                return v2;
-                            }else if(val1.compareToIgnoreCase("verdadero")==0)
-                            {
-                                double v2=Double.parseDouble(val2);
-                                return v2+1;
-                            }else
-                            {
-                                return val1+val2;
-                            }
-                        }else if(isNumeric(val1)==false && isNumeric(val2)==false)
-                        {
-                            if(val1.compareToIgnoreCase("verdadero")==0 && val2.compareToIgnoreCase("verdadero")==0)
-                            {
-                                return 2;
-                            }else if(val1.compareToIgnoreCase("falso")==0 && val2.compareToIgnoreCase("falso")==0)
-                            {
-                                return 0;
-                            }else if(val1.compareToIgnoreCase("verdadero")==0 || val2.compareToIgnoreCase("falso")==0)
-                            {
-                                return 1;
-                            }else if(val1.compareToIgnoreCase("falso")==0 || val2.compareToIgnoreCase("verdadero")==0)
-                            {
-                                return 1;
-                            }else
-                            {
-                                if(val1.compareToIgnoreCase("verdadero")==0)
-                                {
-                                    val2="1 "+val2;
-                                    return val2;
-                                }else if(val1.compareToIgnoreCase("falso")==0)
-                                {
-                                    val2 = "0 "+ val2;
-                                    return val2;
-                                }else if(val2.compareToIgnoreCase("verdadero")==0)
-                                {
-                                    val1+=" 1";
-                                    return val1;
-                                }else if(val2.compareToIgnoreCase("falso")==0)
-                                {
-                                    val1+=" 0";
-                                    return val1;
-                                }else
-                                {
-                                    return val1+val2;
-                                }
-                            }
-                        }
-                        return val1+val2;
-                    case "-":
-                        String res1=(String)evaluar_expresion(raiz.hijos.get(0));
-                        String res2=(String)evaluar_expresion(raiz.hijos.get(2));
-                        
-                        if(isNumeric(res1)==true && isNumeric(res2)==true)
-                        {
-                            double r1=Double.parseDouble(res1);
-                            double r2=Double.parseDouble(res2);
-                            return r1-r2;
-                        }else if(isNumeric(res1)==true && isNumeric(res2)==false)
-                        {
-                            if(res2.compareToIgnoreCase("falso")==0)
-                            {
-                                double r1=Double.parseDouble(res1);
-                                return r1;
-                            }else if(res2.compareToIgnoreCase("verdadero")==0)
-                            {
-                                double r1=Double.parseDouble(res1);
-                                return r1-1;
-                                
-                            }else
-                            {
-                                //Error No se puede restar un valor numerico con un texto
-                            }
-                        }else if(isNumeric(res1)==false && isNumeric(res2)==true)
-                        {
-                            if(res1.compareToIgnoreCase("verdadero")==0)
-                            {
-                                double r2=Double.parseDouble(res2);
-                                return 1-r2;
-                            }else if(res1.compareToIgnoreCase("falso")==0)
-                            {
-                                double r2=Double.parseDouble(res2);
-                                return 0-r2;
-                            }else
-                            {
-                                //Error no se puede restar un valor Texto con un numerico
-                            }
-                        }else if(isNumeric(res1)==false && isNumeric(res2)==false)
-                        {
-                            if(res1.compareToIgnoreCase("verdadero")==0)
-                            {
-                                if(res2.compareToIgnoreCase("verdadero")==0)
-                                {
-                                    return 0;
-                                }else if(res2.compareToIgnoreCase("falso")==0)
-                                {
-                                    return 1;
-                                }else
-                                {
-                                    //ERROR no se puede restar un valor booleano con un texto
-                                }
-                            }else if(res1.compareToIgnoreCase("falso")==0)
-                            {
-                                if(res2.compareToIgnoreCase("verdadero")==0)
-                                {
-                                    return -1;
-                                }else if(res2.compareToIgnoreCase("falso")==0)
-                                {
-                                    return 0;
-                                }else
-                                {
-                                    //ERROR no se puede restar un valor booleano con un texto
-                                }
-                            }else
-                            {
-                                //Error no se pueden restar valores de tipo texto
-                            }
-                        }
-                        break;
-                    case "*":
-                        String por1 = (String)evaluar_expresion(raiz.hijos.get(0));
-                        String por2 = (String)evaluar_expresion(raiz.hijos.get(2));
-                        
-                        if(isNumeric(por1)==true && isNumeric(por2)==true)
-                        {
-                            double p1=Double.parseDouble(por1);
-                            double p2=Double.parseDouble(por2);
-                            return p1*p2;
-                        }else if(isNumeric(por1)==true && isNumeric(por2)==false)
-                        {
-                            if(por2.compareToIgnoreCase("verdadero")==0)
-                            {
-                                double p2=Double.parseDouble(por2);
-                                return p2;
-                            }else if(por2.compareToIgnoreCase("falso")==0)
-                            {
-                                return 0;
-                            }else
-                            {
-                                //ERROR no se puede multiplicar un valor Numerico por un Texto
-                            }
-                            
-                        }else if(isNumeric(por1)==false && isNumeric(por2)==true)
-                        {
-                            if(por1.compareToIgnoreCase("verdadero")==0)
-                            {
-                                double p1=Double.parseDouble(por1);
-                                return p1;
-                            }else if(por1.compareToIgnoreCase("falso")==0)
-                            {
-                                return 0;
-                            }else
-                            {
-                                //ERROR no se puede multiplicar un valor Numerico por un Texto
-                            }
-                        }else if(isNumeric(por1)==false && isNumeric(por2)==false)
-                        {
-                            if(por1.compareToIgnoreCase("verdadero")==0)
-                            {
-                                if(por2.compareToIgnoreCase("verdadero")==0)
-                                {
-                                    return 1;
-                                }else if(por2.compareToIgnoreCase("falso")==0)
-                                {
-                                    return 0;
-                                }else
-                                {
-                                    //ERROR NO SE PUEDE MULTIPLICAR UN VALOR NUMERICO POR UN TEXTO
-                                }   
-                            }else if(por1.compareToIgnoreCase("falso")==0)
-                            {
-                                if(por2.compareToIgnoreCase("verdadero")==0 || por2.compareToIgnoreCase("falso")==0)
-                                {
-                                    return 0;
-                                }else
-                                {
-                                    //ERROR NO SE PUEDE MULTIPLICAR UN VALOR NUMERICO POR UN TEXTO
-                                }
-                            }else
-                            {
-                                //ERROR NO SE PUEDEN MULTIPLICAR VALORES DE TIPO TEXTO
-                            }
-                        }
-                        break;
-                    case "/":
-                        String div1=(String)evaluar_expresion(raiz.hijos.get(0));
-                        String div2=(String)evaluar_expresion(raiz.hijos.get(2));
-                        
-                        if(isNumeric(div1)==true && isNumeric(div2)==true)
-                        {
-                            double d1=Double.parseDouble(div1);
-                            double d2=Double.parseDouble(div2);
-                            
-                            if(d2==0)
-                            {
-                                //ERROR, NO SE PUEDE DIVIDIR SOBRE 0
-                            }else
-                            {
-                                return d1/d2;
-                            }
-                        }else if(isNumeric(div1)==true && isNumeric(div2)==false)
-                        {
-                            if(div2.compareToIgnoreCase("verdadero")==0)
-                            {
-                                double d1=Double.parseDouble(div1);
-                                return d1;
-                            }else if(div2.compareToIgnoreCase("falso")==0)
-                            {
-                                //ERROR no se puede dividir sobre 0
-                            }else
-                            {
-                                //ERROR impompatibilidad de tipos
-                            }
-                        }else if(isNumeric(div1)==false && isNumeric(div2)==true)
-                        {
-                            if(div1.compareToIgnoreCase("verdadero")==0)
-                            {
-                                double d2=Double.parseDouble(div2);
-                                return 1/d2;
-                            }else if(div1.compareToIgnoreCase("falso")==0)
-                            {
-                                return 0;
-                            }else
-                            {
-                                //Error imcompatiblidad de tipos
-                            }
-                        }else if(isNumeric(div1)==false && isNumeric(div2)==false)
-                        {
-                            if(div1.compareToIgnoreCase("verdadero")==0)
-                            {
-                             if(div2.compareToIgnoreCase("verdadero")==0)
-                             {
-                                return 1;
-                             }else if(div2.compareToIgnoreCase("falso")==0)
-                             {
-                                //ERROR no se puede dividir sobre 0
-                             }else
-                             {
-                                 // ERROR INCOMPATIBILIDAD DE TIPOS
-                             }
-                            }else if( div1.compareToIgnoreCase("falso")==0)
-                            {
-                                if(div2.compareToIgnoreCase("verdadero")==0)
-                                {
-                                    return 0;
-                                }else if(div2.compareToIgnoreCase("falso")==0)
-                                {
-                                    //ERROR NO SE PUEDE DIVIDIR SOBRE 0
-                                }else
-                                {
-                                    //ERROR INCOMPATIBLIDAD DE TIPOS
-                                }
-                            }else
-                            {
-                                //ERROR NO SE PUEDE OPERAR CON VALORES DE TIPO TEXTO
-                            }
-                        }
-                        break;
-                    case "%":
-                        
-                        String mod1=(String)evaluar_expresion(raiz.hijos.get(0));
-                        String mod2=(String)evaluar_expresion(raiz.hijos.get(2));
-                        
-                        if(isNumeric(mod1)==true && isNumeric(mod2)==true)
-                        {
-                            double m1=Double.parseDouble(mod1);
-                            double m2=Double.parseDouble(mod2);
-                            
-                            return m1%m2;
-                            
-                        }else if(isNumeric(mod1)==true && isNumeric(mod2)==false)
-                        {
-                            if(mod2.compareToIgnoreCase("verdadero")==0)
-                            {
-                                double m1=Double.parseDouble(mod1);
-                                return m1%1;
-                            }else if(mod2.compareToIgnoreCase("falso")==0)
-                            {
-                                //Error no se puede dividir sobre 0
-                            }else
-                            {
-                                //INCOMPATIBILIDAD DE TIPOS
-                            }
-                            
-                        }else if(isNumeric(mod1)==false && isNumeric(mod2)==true)
-                        {
-                            if(mod1.compareToIgnoreCase("verdadero")==0)
-                            {
-                                double m2=Double.parseDouble(mod2);
-                                return 1%m2;
-                            }else if(mod1.compareToIgnoreCase("falso")==0)
-                            {
-                                return 0;
-                            }else
-                            {
-                                //ERROR INCOMPATIBILIDAD DE TIPOS
-                            }
-                            
-                        }else if(isNumeric(mod1)==false && isNumeric(mod2)==false)
-                        {
-                            if(mod1.compareToIgnoreCase("verdadero")==0)
-                            {
-                                if(mod2.compareToIgnoreCase("verdadero")==0)
-                                {
-                                    return 0;
-                                }else if(mod2.compareToIgnoreCase("falso")==0)
-                                {
-                                    //ERROR NO SE PUEDE DIIDIR SOBRE 0
-                                }else
-                                {
-                                    //ERROR INCOMPATIBILIDAD DE TIPOS
-                                }
-                            }else if(mod1.compareToIgnoreCase("falso")==0)
-                            {
-                                if(mod2.compareToIgnoreCase("verdadero")==0)
-                                {
-                                    return 0;
-                                }else if(mod2.compareToIgnoreCase("falso")==0)
-                                {
-                                    //Error no se puede dividir sobre 0
-                                }else
-                                {
-                                    //Error incompatibilidad de tipos
-                                }
-                            }else
-                            {
-                                //ERROR NO SE PUEDE OPERAR CON VALORES DE TIPO TEXTO
-                            }
-                        }
-                        break;
-                    case "^":
-                        String pot1=(String)evaluar_expresion(raiz.hijos.get(0));
-                        String pot2=(String)evaluar_expresion(raiz.hijos.get(2));
-                        
-                        if(isNumeric(pot1)==true && isNumeric(pot2)==true)
-                        {
-                            double pote1=Double.parseDouble(pot1);
-                            double pote2=Double.parseDouble(pot2);
-                            double pot=Math.pow(pote1, pote2);
-                            return pot;
-                        }else if(isNumeric(pot1)==true && isNumeric(pot2)==false)
-                        {
-                            if(pot2.compareToIgnoreCase("verdadero")==0)
-                            {
-                                double pote1=Double.parseDouble(pot1);
-                                return pote1;
-                            }else if(pot2.compareToIgnoreCase("falso")==0)
-                            {
-                                return 1;
-                            }else
-                            {
-                                //Error incompatibilidad de tipos;
-                            }
-                            
-                        }else if(isNumeric(pot1)==false && isNumeric(pot2)==true)
-                        {
-                            if(pot1.compareToIgnoreCase("verdadero")==0)
-                            {
-                                return 1;
-                            }else if(pot1.compareToIgnoreCase("falso")==0)
-                            {
-                                return 0;
-                            }else 
-                            {
-                                //incompatibilidad de tipos
-                            }
-                            
-                        }else if(isNumeric(pot1)==false && isNumeric(pot2)==false)
-                        {
-                            if(pot1.compareToIgnoreCase("verdadero")==0)
-                            {
-                                if(pot2.compareToIgnoreCase("verdadero")==0)
-                                {
-                                    return 1;
-                                }else if(pot2.compareToIgnoreCase("falso")==0)
-                                {
-                                    return 1;
-                                }else
-                                {
-                                    //Error incompatiblidad de tipos
-                                }
-                                
-                            }else if(pot1.compareToIgnoreCase("falso")==0)
-                            {
-                                if(pot1.compareToIgnoreCase("verdadero")==0)
-                                {
-                                    return 0;
-                                }else if(pot1.compareToIgnoreCase("falso")==0)
-                                {
-                                    //Error instruccion no soportada 0^0;
-                                }else 
-                                {
-                                    //Error incompatibilidad de tipos
-                                }
-                            }else 
-                            {
-                                //Error no se puede operar con valores de tipo texto
-                            }
-                        }
-                        break;
-                    case "==":
-                        String igual1=(String)evaluar_expresion(raiz.hijos.get(0));
-                        String igual2=(String)evaluar_expresion(raiz.hijos.get(2));
-                        
-                        if(isNumeric(igual1)==true && isNumeric(igual2)==true)
-                        {
-                            if(igual1.compareTo(igual2)==0)
-                            {
-                                return 1;
-                            }else
-                            {
-                                return 0;
-                            }
-                            
-                        }else if(isNumeric(igual1)==false && isNumeric(igual2)==false)
-                        {
-                            if(igual1.compareToIgnoreCase("verdadero")==0)
-                            {
-                                if(igual2.compareToIgnoreCase("verdadero")==0)
-                                {
-                                    return 1;
-                                }else if(igual2.compareToIgnoreCase("falso")==0)
-                                {
-                                    return 0;
-                                }else 
-                                {
-                                    //Error incompatibilidad de tipos
-                                }
-                            }else if(igual1.compareToIgnoreCase("falso")==0)
-                            {
-                                if(igual2.compareToIgnoreCase("verdadero")==0)
-                                {
-                                    return 0;
-                                }else if(igual2.compareToIgnoreCase("falso")==0)
-                                {
-                                    return 1;
-                                }else
-                                {
-                                    //incompatibilidad de tipos
-                                }
-                            }else
-                            {
-                                if(igual1.compareTo(igual2)==0)
-                                {
-                                    return 1;
-                                }else
-                                {
-                                    return 0;
-                                }
-                            }
-                            
-                        }else
-                        {
-                            //error incompatibilidad de tipos
-                        }
-                            
-                        break;
+                    case "+": return evaluar_Mas(raiz.hijos.get(0), raiz.hijos.get(2));
+                    case "-": return evaluar_Menos(raiz.hijos.get(0), raiz.hijos.get(2));
+                    case "*": return evaluar_Por(raiz.hijos.get(0), raiz.hijos.get(2));
+                    case "/": return evaluar_Dividir(raiz.hijos.get(0), raiz.hijos.get(2));
+                    case "%": return evaluar_Modulo(raiz.hijos.get(0), raiz.hijos.get(2));
+                    case "^": return evaluar_Potencia(raiz.hijos.get(0), raiz.hijos.get(2));
+                    case "==": return evaluar_Igual(raiz.hijos.get(0), raiz.hijos.get(2));
                     case "&&":
                     break;
                 }
@@ -760,15 +288,24 @@ public class Interprete {
                 if(raiz.hijos.get(0).valor.compareToIgnoreCase("-")==0)
                 return (int)evaluar_expresion(raiz.hijos.get(1))*-1;
             case 1:
-                return evaluar_expresion(raiz.hijos.get(0));
-            case 0:
                 switch (raiz.valor)
-                    {
-                        case "EXP":
-                            return evaluar_expresion(raiz.hijos.get(0));
-                        default:
-                            return raiz.valor;
-                    }
+                {
+                    case "EXP":
+                        return evaluar_expresion(raiz.hijos.get(0));
+                    case "TOKNUMERO":
+                        return evaluar_Numero(raiz.hijos.get(0));
+                    case "TOKVERDADERO":
+                        return true;
+                    case "TOKFALSO":
+                        return false;    
+                    default:
+                        return evaluar_expresion(raiz.hijos.get(0));
+                }
+                
+                
+            case 0:
+                return raiz.valor;
+                   
             default:
                 break;
                 
@@ -801,8 +338,1064 @@ public class Interprete {
         return false;
     }
 
-    
-    
-   
+    private Object evaluar_Mas(Nodo izq, Nodo der) {
+        Object val1=evaluar_expresion(izq);
+        Object val2=evaluar_expresion(der);
+        
+        int tipo1 = retornar_tipo(val1);
+        int tipo2 = retornar_tipo(val2);
+        
+        if(tipo1==-1 && tipo2==-1){
+            //error evaluacion dio null
+            
+            return -3092;
+        }
+        
+        if(tipo1==1|| tipo2==1){
+            return val1.toString()+ val2.toString();
+        }else{
+            return Double.parseDouble(val1.toString())+Double.parseDouble(val2.toString());
+        }
+        
+        /*else if( tipo1==2|| tipo2==2){
+            return Double.parseDouble(val1.toString())+Double.parseDouble(val2.toString())
+        }else if( tipo1==3|| tipo2==3){
+            return Double.parseDouble(val1.toString())+Double.parseDouble(val2.toString())
+        }*/
+        
+        
+      /*  switch (val1.getClass().getTypeName())
+        {
+            case "java.lang.Integer":
+                switch(val2.getClass().getTypeName())
+                {
+                    case "java.lang.Integer":
+                        int i1=Integer.parseInt(val1.toString());
+                        int i2=Integer.parseInt(val2.toString());
+                        return i1+i2;
+                    case "java.lang.Double":
+                        double d1=Double.parseDouble(val1.toString());
+                        double d2=Double.parseDouble(val2.toString());
+                        return d1+d2;
+                    case "java.lang.Boolean":
+                        int b1=Integer.parseInt(val1.toString());
+                        boolean b2=Boolean.parseBoolean(val2.toString());
+                        if(b2==true)
+                        {
+                            return b1+1;
+                        }else
+                        {
+                            return b1;
+                        }
+                    case "java.lang.String":
+                        String s1=val1.toString();
+                        String s2=val2.toString();
+                        return s1+s2;
+                }
+                break;
+                
+            case "java.lang.Double":
+                switch(val2.getClass().getTypeName())
+                {
+                    case "java.lang.Integer":
+                        double i1=Double.parseDouble(val1.toString());
+                        double i2=Double.parseDouble(val2.toString());
+                        return i1+i2;
+                    case "java.lang.Double":
+                        double d1=Double.parseDouble(val1.toString());
+                        double d2=Double.parseDouble(val2.toString());
+                        return d1+d2;
+                    case "java.lang.Boolean":
+                        double b1=Double.parseDouble(val1.toString());
+                        boolean b2=Boolean.parseBoolean(val2.toString());
+                        if(b2==true)
+                        {
+                            return b1+1;
+                        }else
+                        {
+                            return b1;
+                        }
+                    case "java.lang.String":
+                        String s1=val1.toString();
+                        String s2=val2.toString();
+                        return s1+s2;
+                }
+                break;
+                
+            case "java.lang.Boolean":
+                boolean b1=Boolean.parseBoolean(val1.toString());
+                if(b1==true)
+                {
+                    switch(val2.getClass().getTypeName())
+                    {
+                        case "java.lang.Integer":
+                            int i2=Integer.parseInt(val2.toString());
+                            return i2+1;
+                        case "java.lang.Double":
+                            double d2=Double.parseDouble(val2.toString());
+                            return d2+1;
+                        case "java.lang.Boolean":
+                            boolean b2=Boolean.parseBoolean(val2.toString());
+                            if(b2==true)
+                            {
+                                return 2;
+                            }else
+                            {
+                                return 1;
+                            }
+                        case "java.lang.String":
+                            
+                            String s2=val2.toString();
+                            return "1"+s2;
+                    }
+                }else
+                {
+                    switch(val2.getClass().getTypeName())
+                    {
+                        case "java.lang.Integer":
+                            int i2=Integer.parseInt(val2.toString());
+                            return i2;
+                        case "java.lang.Double":
+                            double d2=Double.parseDouble(val2.toString());
+                            return d2;
+                        case "java.lang.Boolean":
+                            boolean b2=Boolean.parseBoolean(val2.toString());
+                            if(b2==true)
+                            {
+                                return 1;
+                            }else
+                            {
+                                return 0;
+                            }
+                        case "java.lang.String":
+                            
+                            String s2=val2.toString();
+                            return "0"+s2;
+                    }
+                }
+                
+                break;
+            case "java.lang.String":
+                switch(val2.getClass().getTypeName())
+                {
+                    case "java.lang.Integer":
+                    case "java.lang.Double":
+                    case "java.lang.String":
+                        String s1=val1.toString();
+                        String s2=val2.toString();
+                        return s1+s2;
+                    case "java.lang.Boolean":
+                        String aux1=val1.toString();
+                        boolean b=Boolean.parseBoolean(val2.toString());
+                        if(b==true)
+                        {
+                            return aux1+"1";
+                        }else
+                        {
+                            return aux1+"0";
+                        }
+                    
+                }   
+                break;
+        }
+    return -1;*/
+    }
+
+    private Object evaluar_Menos(Nodo izq, Nodo der) {
+        Object val1=evaluar_expresion(izq);
+        Object val2=evaluar_expresion(der);
+        
+        
+        int tipo1 = retornar_tipo(val1);
+        int tipo2 = retornar_tipo(val2);
+        
+        if(tipo1==-1 || tipo2==-1){
+            //error evaluacion dio null
+            return -3092;
+        }
+        
+        if(tipo1==1|| tipo2==1){
+            //agregas a error no se pueden restar stirngs
+            return -3092;
+        }else{
+            return Double.parseDouble(val1.toString())- Double.parseDouble(val2.toString());
+        }
+    }
+        /*
+        switch (val1.getClass().getTypeName())
+        {
+            case "java.lang.Integer":
+                switch(val2.getClass().getTypeName())
+                {
+                    case "java.lang.Integer":
+                        int i1=Integer.parseInt(val1.toString());
+                        int i2=Integer.parseInt(val2.toString());
+                        return i1-i2;
+                    case "java.lang.Double":
+                        double d1=Double.parseDouble(val1.toString());
+                        double d2=Double.parseDouble(val2.toString());
+                        return d1-d2;
+                    case "java.lang.Boolean":
+                        int b1=Integer.parseInt(val1.toString());
+                        boolean b2=Boolean.parseBoolean(val2.toString());
+                        if(b2==true)
+                        {
+                            return b1-1;
+                        }else
+                        {
+                            return b1;
+                        }
+                    case "java.lang.String":
+                        ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede restar variables de tipo Texto");
+                        LSemanticos.add(error);
+                        break;
+                }
+                break;
+                
+            case "java.lang.Double":
+                switch(val2.getClass().getTypeName())
+                {
+                    case "java.lang.Integer":
+                        double i1=Double.parseDouble(val1.toString());
+                        double i2=Double.parseDouble(val2.toString());
+                        return i1-i2;
+                    case "java.lang.Double":
+                        double d1=Double.parseDouble(val1.toString());
+                        double d2=Double.parseDouble(val2.toString());
+                        return d1-d2;
+                    case "java.lang.Boolean":
+                        double b1=Double.parseDouble(val1.toString());
+                        boolean b2=Boolean.parseBoolean(val2.toString());
+                        if(b2==true)
+                        {
+                            return b1-1;
+                        }else
+                        {
+                            return b1;
+                        }
+                    case "java.lang.String":
+                        ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede restar variables de tipo Texto");
+                        LSemanticos.add(error);
+                        break;
+                }
+                break;
+                
+            case "java.lang.Boolean":
+                boolean b1=Boolean.parseBoolean(val1.toString());
+                if(b1==true)
+                {
+                    switch(val2.getClass().getTypeName())
+                    {
+                        case "java.lang.Integer":
+                            int i2=Integer.parseInt(val2.toString());
+                            return 1-i2;
+                        case "java.lang.Double":
+                            double d2=Double.parseDouble(val2.toString());
+                            return 1-d2;
+                        case "java.lang.Boolean":
+                            boolean b2=Boolean.parseBoolean(val2.toString());
+                            if(b2==true)
+                            {
+                                return 0;
+                            }else
+                            {
+                                return 1;
+                            }
+                        case "java.lang.String":
+                            
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede restar variables de tipo Texto");
+                            LSemanticos.add(error);
+                            break;
+                    }
+                }else
+                {
+                    switch(val2.getClass().getTypeName())
+                    {
+                        case "java.lang.Integer":
+                            int i2=Integer.parseInt(val2.toString());
+                            return i2*-1;
+                        case "java.lang.Double":
+                            double d2=Double.parseDouble(val2.toString());
+                            return d2*-1;
+                        case "java.lang.Boolean":
+                            boolean b2=Boolean.parseBoolean(val2.toString());
+                            if(b2==true)
+                            {
+                                return -1;
+                            }else
+                            {
+                                return 0;
+                            }
+                        case "java.lang.String":
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede restar variables de tipo Texto");
+                            LSemanticos.add(error);
+                            break;
+                            
+                    }
+                }
+                
+                break;
+            case "java.lang.String":
+                ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede restar variables de tipo Texto");
+                LSemanticos.add(error);
+                        
+                break;
+        }
+    return -1;
+        
+    }*/
+
+    private Object evaluar_Por(Nodo izq, Nodo der) {
+        Object val1=evaluar_expresion(izq);
+        Object val2=evaluar_expresion(der);
+        
+        switch (val1.getClass().getTypeName())
+        {
+            case "java.lang.Integer":
+                switch(val2.getClass().getTypeName())
+                {
+                    case "java.lang.Integer":
+                        int i1=Integer.parseInt(val1.toString());
+                        int i2=Integer.parseInt(val2.toString());
+                        return i1*i2;
+                    case "java.lang.Double":
+                        double d1=Double.parseDouble(val1.toString());
+                        double d2=Double.parseDouble(val2.toString());
+                        return d1*d2;
+                    case "java.lang.Boolean":
+                        int b1=Integer.parseInt(val1.toString());
+                        boolean b2=Boolean.parseBoolean(val2.toString());
+                        if(b2==true)
+                        {
+                            return b1*1;
+                        }else
+                        {
+                            return b1*0;
+                        }
+                    case "java.lang.String":
+                        ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna,"Semantico", "No se puede multiplicar variables de tipo Texto");
+                        LSemanticos.add(error);
+                        break;
+                }
+                break;
+                
+            case "java.lang.Double":
+                switch(val2.getClass().getTypeName())
+                {
+                    case "java.lang.Integer":
+                        double i1=Double.parseDouble(val1.toString());
+                        double i2=Double.parseDouble(val2.toString());
+                        return i1*i2;
+                    case "java.lang.Double":
+                        double d1=Double.parseDouble(val1.toString());
+                        double d2=Double.parseDouble(val2.toString());
+                        return d1*d2;
+                    case "java.lang.Boolean":
+                        double b1=Double.parseDouble(val1.toString());
+                        boolean b2=Boolean.parseBoolean(val2.toString());
+                        if(b2==true)
+                        {
+                            return b1*1;
+                        }else
+                        {
+                            return b1*0;
+                        }
+                    case "java.lang.String":
+                        ErrorT error=new ErrorT(val2.toString(),der.linea, der.columna, "Semantico", "No se puede multiplicar variables de tipo Texto");
+                        LSemanticos.add(error);
+                        break;
+                }
+                break;
+                
+            case "java.lang.Boolean":
+                boolean b1=Boolean.parseBoolean(val1.toString());
+                if(b1==true)
+                {
+                    switch(val2.getClass().getTypeName())
+                    {
+                        case "java.lang.Integer":
+                            int i2=Integer.parseInt(val2.toString());
+                            return 1*i2;
+                        case "java.lang.Double":
+                            double d2=Double.parseDouble(val2.toString());
+                            return 1*d2;
+                        case "java.lang.Boolean":
+                            boolean b2=Boolean.parseBoolean(val2.toString());
+                            if(b2==true)
+                            {
+                                return 1;
+                            }else
+                            {
+                                return 0;
+                            }
+                        case "java.lang.String":
+                            
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede multiplicar variables de tipo Texto");
+                            LSemanticos.add(error);
+                            break;
+                    }
+                }else
+                {
+                    switch(val2.getClass().getTypeName())
+                    {
+                        case "java.lang.Integer":
+                            int i2=Integer.parseInt(val2.toString());
+                            return 0*i2;
+                        case "java.lang.Double":
+                            double d2=Double.parseDouble(val2.toString());
+                            return 0*d2;
+                        case "java.lang.Boolean":
+                            boolean b2=Boolean.parseBoolean(val2.toString());
+                            if(b2==true)
+                            {
+                                return 0;
+                            }else
+                            {
+                                return 0;
+                            }
+                        case "java.lang.String":
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede multiplicar variables de tipo Texto");
+                            LSemanticos.add(error);
+                            break;
+                            
+                    }
+                }
+                
+                break;
+            case "java.lang.String":
+                ErrorT error=new ErrorT(val2.toString(), izq.linea, izq.columna, "Semantico", "No se puede multiplicar variables de tipo Texto");
+                LSemanticos.add(error);
+                        
+                break;
+        }
+    return -1;
+    } 
+
+    private Object evaluar_Dividir(Nodo izq, Nodo der) {
+        Object val1=evaluar_expresion(izq);
+        Object val2=evaluar_expresion(der);
+        
+        switch (val1.getClass().getTypeName())
+        {
+            case "java.lang.Integer":
+                switch(val2.getClass().getTypeName())
+                {
+                    case "java.lang.Integer":
+                        int i1=Integer.parseInt(val1.toString());
+                        int i2=Integer.parseInt(val2.toString());
+                        if(i2==0)
+                        {
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                            LSemanticos.add(error);
+                            return -1;
+                        }else
+                        {
+                            return i1/i2;
+                        }
+                        
+                    case "java.lang.Double":
+                        double d1=Double.parseDouble(val1.toString());
+                        double d2=Double.parseDouble(val2.toString());
+                        if(d2==0)
+                        {
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                            LSemanticos.add(error);
+                            return -1;
+                        }else
+                        {
+                            return d1/d2;
+                        }
+                        
+                    case "java.lang.Boolean":
+                        int b1=Integer.parseInt(val1.toString());
+                        boolean b2=Boolean.parseBoolean(val2.toString());
+                        if(b2==true)
+                        {
+                            return b1/1;
+                        }else
+                        {
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                            LSemanticos.add(error);
+                            return -1;
+                        }
+                    case "java.lang.String":
+                        ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna,"Semantico", "No se puede devidir variables de tipo Texto");
+                        LSemanticos.add(error);
+                        break;
+                }
+                break;
+                
+            case "java.lang.Double":
+                switch(val2.getClass().getTypeName())
+                {
+                    case "java.lang.Integer":
+                        double i1=Double.parseDouble(val1.toString());
+                        double i2=Double.parseDouble(val2.toString());
+                        if(i2==0)
+                        {
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                            LSemanticos.add(error);
+                            return -1;
+                        }else
+                        {
+                            return i1/i2;
+                        }
+                    case "java.lang.Double":
+                        double d1=Double.parseDouble(val1.toString());
+                        double d2=Double.parseDouble(val2.toString());
+                        if(d2==0)
+                        {
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                            LSemanticos.add(error);
+                            return -1;
+                        }else
+                        {
+                            return d1/d2;
+                        }
+                    case "java.lang.Boolean":
+                        double b1=Double.parseDouble(val1.toString());
+                        boolean b2=Boolean.parseBoolean(val2.toString());
+                        if(b2==true)
+                        {
+                            return b1/1;
+                        }else
+                        {
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                            LSemanticos.add(error);
+                            return -1;
+                        }
+                    case "java.lang.String":
+                        ErrorT error=new ErrorT(val2.toString(),der.linea, der.columna, "Semantico", "No se puede dividir variables de tipo Texto");
+                        LSemanticos.add(error);
+                        break;
+                }
+                break;
+                
+            case "java.lang.Boolean":
+                boolean b1=Boolean.parseBoolean(val1.toString());
+                if(b1==true)
+                {
+                    switch(val2.getClass().getTypeName())
+                    {
+                        case "java.lang.Integer":
+                            int i2=Integer.parseInt(val2.toString());
+                            if(i2==0)
+                            {
+                                ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                                LSemanticos.add(error);
+                                return -1;
+                            }else
+                            {
+                                return 1/i2;
+                            }
+                        case "java.lang.Double":
+                            double d2=Double.parseDouble(val2.toString());
+                            if(d2==0)
+                            {
+                                ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                                LSemanticos.add(error);
+                                return -1;
+                            }else
+                            {
+                                return 1/d2;
+                            }
+                        case "java.lang.Boolean":
+                            boolean b2=Boolean.parseBoolean(val2.toString());
+                            if(b2==true)
+                            {
+                                return 1;
+                            }else
+                            {
+                                ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                                LSemanticos.add(error);
+                                return -1;
+                            }
+                        case "java.lang.String":
+                            
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir variables de tipo Texto");
+                            LSemanticos.add(error);
+                            break;
+                    }
+                }else
+                {
+                    switch(val2.getClass().getTypeName())
+                    {
+                        case "java.lang.Integer":
+                            int i2=Integer.parseInt(val2.toString());
+                            if(i2==0)
+                            {
+                                ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                                LSemanticos.add(error);
+                                return -1;
+                            }else
+                            {
+                                return 0/i2;
+                            }
+                        case "java.lang.Double":
+                            double d2=Double.parseDouble(val2.toString());
+                            if(d2==0)
+                            {
+                                ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                                LSemanticos.add(error);
+                                return -1;
+                            }else
+                            {
+                                return 0/d2;
+                            }
+                        case "java.lang.Boolean":
+                            boolean b2=Boolean.parseBoolean(val2.toString());
+                            if(b2==true)
+                            {
+                                return 0;
+                            }else
+                            {
+                                ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                                LSemanticos.add(error);
+                                return -1;
+                            }
+                        case "java.lang.String":
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir variables de tipo Texto");
+                            LSemanticos.add(error);
+                            break;
+                            
+                    }
+                }
+                
+                break;
+            case "java.lang.String":
+                ErrorT error=new ErrorT(val2.toString(), izq.linea, izq.columna, "Semantico", "No se puede dividir variables de tipo Texto");
+                LSemanticos.add(error);
+                        
+                break;
+        }
+    return -1;
+    }
+
+    private Object evaluar_Modulo(Nodo izq, Nodo der) {
+        Object val1=evaluar_expresion(izq);
+        Object val2=evaluar_expresion(der);
+        
+        switch (val1.getClass().getTypeName())
+        {
+            case "java.lang.Integer":
+                switch(val2.getClass().getTypeName())
+                {
+                    case "java.lang.Integer":
+                        int i1=Integer.parseInt(val1.toString());
+                        int i2=Integer.parseInt(val2.toString());
+                        if(i2==0)
+                        {
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                            LSemanticos.add(error);
+                            return -1;
+                        }else
+                        {
+                            return i1%i2;
+                        }
+                        
+                    case "java.lang.Double":
+                        double d1=Double.parseDouble(val1.toString());
+                        double d2=Double.parseDouble(val2.toString());
+                        if(d2==0)
+                        {
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                            LSemanticos.add(error);
+                            return -1;
+                        }else
+                        {
+                            return d1%d2;
+                        }
+                        
+                    case "java.lang.Boolean":
+                        int b1=Integer.parseInt(val1.toString());
+                        boolean b2=Boolean.parseBoolean(val2.toString());
+                        if(b2==true)
+                        {
+                            return b1%1;
+                        }else
+                        {
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                            LSemanticos.add(error);
+                            return -1;
+                        }
+                    case "java.lang.String":
+                        ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna,"Semantico", "No se puede devidir variables de tipo Texto");
+                        LSemanticos.add(error);
+                        break;
+                }
+                break;
+                
+            case "java.lang.Double":
+                switch(val2.getClass().getTypeName())
+                {
+                    case "java.lang.Integer":
+                        double i1=Double.parseDouble(val1.toString());
+                        double i2=Double.parseDouble(val2.toString());
+                        if(i2==0)
+                        {
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                            LSemanticos.add(error);
+                            return -1;
+                        }else
+                        {
+                            return i1%i2;
+                        }
+                    case "java.lang.Double":
+                        double d1=Double.parseDouble(val1.toString());
+                        double d2=Double.parseDouble(val2.toString());
+                        if(d2==0)
+                        {
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                            LSemanticos.add(error);
+                            return -1;
+                        }else
+                        {
+                            return d1%d2;
+                        }
+                    case "java.lang.Boolean":
+                        double b1=Double.parseDouble(val1.toString());
+                        boolean b2=Boolean.parseBoolean(val2.toString());
+                        if(b2==true)
+                        {
+                            return b1%1;
+                        }else
+                        {
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                            LSemanticos.add(error);
+                            return -1;
+                        }
+                    case "java.lang.String":
+                        ErrorT error=new ErrorT(val2.toString(),der.linea, der.columna, "Semantico", "No se puede dividir variables de tipo Texto");
+                        LSemanticos.add(error);
+                        break;
+                }
+                break;
+                
+            case "java.lang.Boolean":
+                boolean b1=Boolean.parseBoolean(val1.toString());
+                if(b1==true)
+                {
+                    switch(val2.getClass().getTypeName())
+                    {
+                        case "java.lang.Integer":
+                            int i2=Integer.parseInt(val2.toString());
+                            if(i2==0)
+                            {
+                                ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                                LSemanticos.add(error);
+                                return -1;
+                            }else
+                            {
+                                return 1%i2;
+                            }
+                        case "java.lang.Double":
+                            double d2=Double.parseDouble(val2.toString());
+                            if(d2==0)
+                            {
+                                ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                                LSemanticos.add(error);
+                                return -1;
+                            }else
+                            {
+                                return 1%d2;
+                            }
+                        case "java.lang.Boolean":
+                            boolean b2=Boolean.parseBoolean(val2.toString());
+                            if(b2==true)
+                            {
+                                return 1;
+                            }else
+                            {
+                                ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                                LSemanticos.add(error);
+                                return -1;
+                            }
+                        case "java.lang.String":
+                            
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir variables de tipo Texto");
+                            LSemanticos.add(error);
+                            break;
+                    }
+                }else
+                {
+                    switch(val2.getClass().getTypeName())
+                    {
+                        case "java.lang.Integer":
+                            int i2=Integer.parseInt(val2.toString());
+                            if(i2==0)
+                            {
+                                ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                                LSemanticos.add(error);
+                                return -1;
+                            }else
+                            {
+                                return 0%i2;
+                            }
+                        case "java.lang.Double":
+                            double d2=Double.parseDouble(val2.toString());
+                            if(d2==0)
+                            {
+                                ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                                LSemanticos.add(error);
+                                return -1;
+                            }else
+                            {
+                                return 0%d2;
+                            }
+                        case "java.lang.Boolean":
+                            boolean b2=Boolean.parseBoolean(val2.toString());
+                            if(b2==true)
+                            {
+                                return 0%1;
+                            }else
+                            {
+                                ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                                LSemanticos.add(error);
+                                return -1;
+                            }
+                        case "java.lang.String":
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir variables de tipo Texto");
+                            LSemanticos.add(error);
+                            break;
+                            
+                    }
+                }
+                
+                break;
+            case "java.lang.String":
+                ErrorT error=new ErrorT(val2.toString(), izq.linea, izq.columna, "Semantico", "No se puede dividir variables de tipo Texto");
+                LSemanticos.add(error);
+                        
+                break;
+        }
+    return -1;
+    }
+
+    private Object evaluar_Potencia(Nodo izq, Nodo der) {
+        Object val1=evaluar_expresion(izq);
+        Object val2=evaluar_expresion(der);
+        
+        switch (val1.getClass().getTypeName())
+        {
+            case "java.lang.Integer":
+                switch(val2.getClass().getTypeName())
+                {
+                    case "java.lang.Integer":
+                        int i1=Integer.parseInt(val1.toString());
+                        int i2=Integer.parseInt(val2.toString());
+                        int pot_int=(int)Math.pow(i1, i2);
+                        return pot_int;
+                    case "java.lang.Double":
+                        double d1=Double.parseDouble(val1.toString());
+                        double d2=Double.parseDouble(val2.toString());
+                        double pot_double=(double)Math.pow(d1, d2);
+                        return pot_double;
+                    case "java.lang.Boolean":
+                        int b1=Integer.parseInt(val1.toString());
+                        boolean b2=Boolean.parseBoolean(val2.toString());
+                        if(b2==true)
+                        {
+                            int pot_bool=(int)Math.pow(b1, 1);
+                            return pot_bool;// me quede aqui
+                        }else
+                        {
+                            return b1*0;
+                        }
+                    case "java.lang.String":
+                        ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna,"Semantico", "No se puede multiplicar variables de tipo Texto");
+                        LSemanticos.add(error);
+                        break;
+                }
+                break;
+                
+            case "java.lang.Double":
+                switch(val2.getClass().getTypeName())
+                {
+                    case "java.lang.Integer":
+                        double i1=Double.parseDouble(val1.toString());
+                        double i2=Double.parseDouble(val2.toString());
+                        return i1*i2;
+                    case "java.lang.Double":
+                        double d1=Double.parseDouble(val1.toString());
+                        double d2=Double.parseDouble(val2.toString());
+                        return d1*d2;
+                    case "java.lang.Boolean":
+                        double b1=Double.parseDouble(val1.toString());
+                        boolean b2=Boolean.parseBoolean(val2.toString());
+                        if(b2==true)
+                        {
+                            return b1*1;
+                        }else
+                        {
+                            return b1*0;
+                        }
+                    case "java.lang.String":
+                        ErrorT error=new ErrorT(val2.toString(),der.linea, der.columna, "Semantico", "No se puede multiplicar variables de tipo Texto");
+                        LSemanticos.add(error);
+                        break;
+                }
+                break;
+                
+            case "java.lang.Boolean":
+                boolean b1=Boolean.parseBoolean(val1.toString());
+                if(b1==true)
+                {
+                    switch(val2.getClass().getTypeName())
+                    {
+                        case "java.lang.Integer":
+                            int i2=Integer.parseInt(val2.toString());
+                            return 1*i2;
+                        case "java.lang.Double":
+                            double d2=Double.parseDouble(val2.toString());
+                            return 1*d2;
+                        case "java.lang.Boolean":
+                            boolean b2=Boolean.parseBoolean(val2.toString());
+                            if(b2==true)
+                            {
+                                return 1;
+                            }else
+                            {
+                                return 0;
+                            }
+                        case "java.lang.String":
+                            
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede multiplicar variables de tipo Texto");
+                            LSemanticos.add(error);
+                            break;
+                    }
+                }else
+                {
+                    switch(val2.getClass().getTypeName())
+                    {
+                        case "java.lang.Integer":
+                            int i2=Integer.parseInt(val2.toString());
+                            return 0*i2;
+                        case "java.lang.Double":
+                            double d2=Double.parseDouble(val2.toString());
+                            return 0*d2;
+                        case "java.lang.Boolean":
+                            boolean b2=Boolean.parseBoolean(val2.toString());
+                            if(b2==true)
+                            {
+                                return 0;
+                            }else
+                            {
+                                return 0;
+                            }
+                        case "java.lang.String":
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede multiplicar variables de tipo Texto");
+                            LSemanticos.add(error);
+                            break;
+                            
+                    }
+                }
+                
+                break;
+            case "java.lang.String":
+                ErrorT error=new ErrorT(val2.toString(), izq.linea, izq.columna, "Semantico", "No se puede multiplicar variables de tipo Texto");
+                LSemanticos.add(error);
+                        
+                break;
+        }
+    return -1;
+    }
+
+    private Object evaluar_Igual(Nodo izq, Nodo der) {
+        String igual1=(String)evaluar_expresion(izq);
+        String igual2=(String)evaluar_expresion(der);
+
+        if(isNumeric(igual1)==true && isNumeric(igual2)==true)
+        {
+            if(igual1.compareTo(igual2)==0)
+            {
+                return 1;
+            }else
+            {
+                return 0;
+            }
+
+        }else if(isNumeric(igual1)==false && isNumeric(igual2)==false)
+        {
+            if(igual1.compareToIgnoreCase("verdadero")==0)
+            {
+                if(igual2.compareToIgnoreCase("verdadero")==0)
+                {
+                    return 1;
+                }else if(igual2.compareToIgnoreCase("falso")==0)
+                {
+                    return 0;
+                }else 
+                {
+                    //Error incompatibilidad de tipos
+                }
+            }else if(igual1.compareToIgnoreCase("falso")==0)
+            {
+                if(igual2.compareToIgnoreCase("verdadero")==0)
+                {
+                    return 0;
+                }else if(igual2.compareToIgnoreCase("falso")==0)
+                {
+                    return 1;
+                }else
+                {
+                    //incompatibilidad de tipos
+                }
+            }else
+            {
+                if(igual1.compareTo(igual2)==0)
+                {
+                    return 1;
+                }else
+                {
+                    return 0;
+                }
+            }
+
+        }else
+        {
+            //error incompatibilidad de tipos
+        }
+        return -1;
+    }
+
+    private Object evaluar_Numero(Nodo nod) {
+       if(nod.valor.contains("."))
+       {
+           double num=Double.parseDouble(nod.valor);
+           return num;
+       }else
+       {
+           int num=Integer.parseInt(nod.valor);
+           return num;
+       }
+    }
+
+    /*
+    private int retornar_tipo(Object val){
+        switch(val2.getClass().getTypeName())
+                    {
+                        case "java.lang.Integer":
+                            int i2=Integer.parseInt(val2.toString());
+                            return 0*i2;
+                        case "java.lang.Double":
+                            double d2=Double.parseDouble(val2.toString());
+                            return 0*d2;
+                        case "java.lang.Boolean":
+                            boolean b2=Boolean.parseBoolean(val2.toString());
+                            if(b2==true)
+                            {
+                                return 0;
+                            }else
+                            {
+                                return 0;
+                            }
+                        case "java.lang.String":
+                            ErrorT error=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede multiplicar variables de tipo Texto");
+                            LSemanticos.add(error);
+                            break;
+                            
+                    }
+    }*/
     
 }
+

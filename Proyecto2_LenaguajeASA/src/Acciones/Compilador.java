@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
  */
 public class Compilador
 {
-    public ArrayList<ErrorT> lista_errores;
+    //public static ArrayList<ErrorT> lista_errores;
     
     public void analizar(String entrada, Data d)
     {
@@ -36,7 +36,7 @@ public class Compilador
         
         analizador_lexico.lista_errores = d.lista_errores;
         analizador_sintactico.lista_errores = d.lista_errores;
-        lista_errores=d.lista_errores;
+        //lista_errores=d.lista_errores;
         
       
         
@@ -44,7 +44,7 @@ public class Compilador
         {
             analizador_sintactico.parse();
             d.raiz = analizador_sintactico.raiz;
-            Interprete inter = new Interprete(d.raiz);
+            Interprete inter = new Interprete(d.raiz,d.lista_errores);
             //Graficador g= new Graficador();
             //g.graficarAST(d.raiz);
            

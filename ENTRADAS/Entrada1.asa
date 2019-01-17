@@ -21,9 +21,12 @@ Vacio Principal(){
     }
 }
 
-
-Decimal a, b, c = 45.8;
+booleano b=15.0/verdadero;
+decimal a=10+5/falso;
+booleano a=verdadero/13.0
+Texto aux="hola"/falso;
 entero valo="a"+3;
+Decimal a, b, c = 45.8;
 texto str1 = "mundo";
 b=6*8+3+"hola";
 a=-5;

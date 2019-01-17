@@ -333,13 +333,13 @@ EXP::=          EXP:a tokMas EXP:b          {: Nodo aux=new Nodo("EXP"); aux.hij
                 | EXP:a tokMayor EXP:b      {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo(">")); aux.hijos.add(b); RESULT = aux; :}
                 | EXP:a tokMenor EXP:b      {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("<")); aux.hijos.add(b); RESULT = aux; :}
                 | tokApar EXP:a tokCpar     {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); :}
-                | tokNumero:num             {: Nodo aux = new Nodo("EXP"); aux.hijos.add(new Nodo(num)); RESULT = aux; :}
+                | tokNumero:num             {: Nodo aux = new Nodo("EXP"); Nodo tok=new Nodo("TOKNUMERO"); tok.hijos.add(new Nodo(num)); aux.hijos.add(tok); RESULT = aux; :}
                 //| tokModulo:mod             {: Nodo aux = new Nodo("EXP"); aux.hijos.add(new Nodo(mod)); RESULT = aux; :}
                 | tokString:cadena          {: String aux=cadena; aux=aux.replaceAll("\"",""); RESULT = new Nodo(aux); :}
                 //| tokChar:caracter          {: String aux=caracter; aux=aux.replaceAll("\'",""); RESULT = new Nodo(aux); :}                
                 | tokMenos EXP:a            {: Nodo aux=new Nodo("EXP"); aux.hijos.add(new Nodo("-")); aux.hijos.add(a); RESULT = aux; :}
-                | tokVerdadero:verdadero    {: Nodo aux = new Nodo("EXP"); aux.hijos.add(new Nodo(verdadero)); RESULT = aux; :}
-                | tokFalso:falso            {: Nodo aux = new Nodo("EXP"); aux.hijos.add(new Nodo(falso)); RESULT = aux; :}
+                | tokVerdadero:verdadero    {: Nodo aux = new Nodo("EXP"); Nodo tok=new Nodo("TOKVERDADERO"); tok.hijos.add(new Nodo(verdadero)); aux.hijos.add(tok); RESULT = aux; :}
+                | tokFalso:falso            {: Nodo aux = new Nodo("EXP"); Nodo tok=new Nodo("TOKFALSO"); tok.hijos.add(new Nodo(falso)); aux.hijos.add(tok); RESULT = aux; :}
                 | tokId:id                  {: Nodo aux = new Nodo("EXP"); aux.hijos.add(new Nodo(id)); RESULT = aux; :}
                 | LLAMADA
                 ;
@@ -396,7 +396,7 @@ FUNCION::=      TIPO:tipo tokId:id tokApar PARAMETROS:par tokCpar tokAlla FSENTS
 METODO::=       tokVacio tokId:id tokApar PARAMETROS:par tokCpar tokAlla MSENTS:msents tokClla
                 {:
                     Nodo aux = new Nodo("METODO");
-                    aux.hijos.add("VACIO");
+                    aux.hijos.add(new Nodo("VACIO"));
                     aux.hijos.add(new Nodo(id));
                     aux.hijos.add(par);
                     aux.hijos.add(msents);
@@ -405,7 +405,7 @@ METODO::=       tokVacio tokId:id tokApar PARAMETROS:par tokCpar tokAlla MSENTS:
                 | tokVacio tokId:id tokApar tokCpar tokAlla MSENTS:msents tokClla
                 {:
                     Nodo aux = new Nodo("METODO");
-                    aux.hijos.add("VACIO");
+                    aux.hijos.add(new Nodo("VACIO"));
                     aux.hijos.add(new Nodo(id));
                     aux.hijos.add(msents);
                     RESULT = aux;
