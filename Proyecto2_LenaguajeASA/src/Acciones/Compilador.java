@@ -44,6 +44,7 @@ public class Compilador
         {
             analizador_sintactico.parse();
             d.raiz = analizador_sintactico.raiz;
+            
             Interprete inter = new Interprete(d.raiz,d.lista_errores);
             //Graficador g= new Graficador();
             //g.graficarAST(d.raiz);

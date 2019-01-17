@@ -28,4 +28,10 @@ public class Nodo
         this.hijos =new ArrayList<Nodo>();
     }
     
+    public void add(Nodo x){
+        if(x!=null){
+            this.hijos.add(x);
+        }
+    }
+    
 }

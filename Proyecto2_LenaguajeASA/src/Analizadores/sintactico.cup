@@ -119,40 +119,40 @@ start with INICIO;
 --------------------- 3ra. y ultima area: Reglas Sintacticas
 -------------------------------------------------------------------*/
 
-INICIO::=       ENCABEZADOS:encs SENTS:sents
+INICIO::=      /* ENCABEZADOS:encs SENTS:sents
                 {:
                     Nodo aux=new Nodo("INICIO");
-                    aux.hijos.add(encs);
-                    aux.hijos.add(sents);
+                    aux.add(encs);
+                    aux.add(sents);
                     this.parser.raiz=aux;
                     //Graficador g=new Graficador();
                     //g.graficarAST(aux);
-                :}
-
+                :}*/
+                SENTS:sents{:this.parser.raiz=sents;:}
                 ;
 
 
 
-ENCABEZADOS::= ENCABEZADOS:encs ENCABEZADO:enc
-                {: encs.hijos.add(enc); RESULT=encs; :}
-                | ENCABEZADO:enc
-                {:
-                    Nodo aux = new Nodo("ENCABEZADOS");
-                    aux.hijos.add(enc);
-                    RESULT = aux;
-                :}
-                ;
+//ENCABEZADOS::= ENCABEZADOS:encs ENCABEZADO:enc
+//                {: encs.add(enc); RESULT=encs; :}
+//                | ENCABEZADO:enc
+//                {:
+//                    Nodo aux = new Nodo("ENCABEZADOS");
+//                    aux.add(enc);
+//                    RESULT = aux;
+//                :}
+//                ;
 
 ENCABEZADO::=   IMPORTAR:imp tokPcoma
                 {:
                     Nodo aux =new Nodo("IMPORTAR");
-                    aux.hijos.add(imp);
+                    aux.add(imp);
                     RESULT = aux; 
                 :}
                 | DEFINIR:def tokPcoma
                 {:
                     Nodo aux =new Nodo("DEFINIR");
-                    aux.hijos.add(def);
+                    aux.add(def);
                     RESULT = aux; 
                 :}
                 ;
@@ -175,11 +175,11 @@ DEFINIR::=      tokDefinir tokString:dir
                 ;
 
 SENTS::=        SENTS:sents SENT:sent
-                {: sents.hijos.add(sent); RESULT = sents; :}
+                {: sents.add(sent); RESULT = sents; :}
                 | SENT:sent
                 {:
                     Nodo aux = new Nodo("SENTS");
-                    aux.hijos.add(sent);
+                    aux.add(sent);
                     RESULT = aux;
                 :}
                 ;
@@ -190,6 +190,9 @@ SENT::=         DECLARACION:dec tokPcoma        {: RESULT = dec; :}
                 | PRINCIPAL:princi              {: RESULT = princi; :}
                 | METODO:metodo                 {: RESULT = metodo; :}
                 | FUNCION:funcion               {: RESULT = funcion; :}
+                | ENCABEZADO:a                  {: RESULT = a; :}
+                //| IMPORTAR:a                    {: RESULT = a; :}
+                //| DEFINIR:a                     {: RESULT = a; :}
                 //| ES_VERDADERO:esVerdad         {: RESULT = esVerdad; :}
                 //| CAMBIAR_A:cambiar             {: RESULT = cambiar; :}
                 //| PARA:para                     {: RESULT = para; :}
@@ -204,17 +207,17 @@ SENT::=         DECLARACION:dec tokPcoma        {: RESULT = dec; :}
                 //| DIBUJAR_AST:dibAST tokPcoma   {: RESULT = dibAST; :}
                 //| DIBUJAR_EXP:dibEXP tokPcoma   {: RESULT = dibEXP; :}
                 //| DIBUJAR_TS:dibTS tokPcoma     {: RESULT = dibTS; :}
-                | error tokPcoma
-                | error tokClla  
+               // | error tokPcoma
+               // | error tokClla  
                 ;
 
 //SENTENCIAS PARA METODOS (RETORNO NO VA ACOMPANIADO DE EXP)
 MSENTS::=        MSENTS:msents MSENT:msent
-                {: msents.hijos.add(msent); RESULT = msents; :}
+                {: msents.add(msent); RESULT = msents; :}
                 | MSENT:msent
                 {:
                     Nodo aux = new Nodo("SENTS");
-                    aux.hijos.add(msent);
+                    aux.add(msent);
                     RESULT = aux;
                 :}
                 ;
@@ -234,17 +237,17 @@ MSENT::=       DECLARACION:dec tokPcoma         {: RESULT = dec; :}
                 | DIBUJAR_AST:dibAST tokPcoma   {: RESULT = dibAST; :}
                 | DIBUJAR_EXP:dibEXP tokPcoma   {: RESULT = dibEXP; :}
                 | DIBUJAR_TS:dibTS tokPcoma     {: RESULT = dibTS; :}
-                | error tokPcoma
-                | error tokClla
+              //  | error tokPcoma
+              //  | error tokClla
                 ;
 
 // SENTENCIAS PARA FUNCIONES (RETORNO VA A COMPANIADO DE  EXP)
 FSENTS::=       FSENTS:fsents FSENT:fsent
-                {: fsents.hijos.add(fsent); RESULT = fsents; :}
+                {: fsents.add(fsent); RESULT = fsents; :}
                 | FSENT:fsent
                 {:
                     Nodo aux=new Nodo("SENTS");
-                    aux.hijos.add(fsent);
+                    aux.add(fsent);
                     RESULT = aux;
                 :}
                 ;
@@ -264,28 +267,37 @@ FSENT::=       DECLARACION:dec tokPcoma         {: RESULT = dec; :}
                 | DIBUJAR_AST:dibAST tokPcoma   {: RESULT = dibAST; :}
                 | DIBUJAR_EXP:dibEXP tokPcoma   {: RESULT = dibEXP; :}
                 | DIBUJAR_TS:dibTS tokPcoma     {: RESULT = dibTS; :}
-                | error tokPcoma
-                | error tokClla
+               // | error tokPcoma
+               // | error tokClla
                 ;                
 
-TIPO::=         tokDecimal
-                {: RESULT = new Nodo("DECIMAL"); :}
-                | tokBooleano
-                {: RESULT = new Nodo("BOOLEANO"); :}
-                | tokTexto
-                {: RESULT = new Nodo("TEXTO"); :}
-                | tokEntero
-                {: RESULT = new Nodo("ENTERO"); :}
+TIPO::=         tokDecimal:a
+                {: Nodo aux=new Nodo("DECIMAL"); aux.columna=aleft+1; aux.linea=aright+1; RESULT = aux; :}
+                | tokBooleano:a
+                {: Nodo aux=new Nodo("BOOLEANO"); aux.columna=aleft+1; aux.linea=aright+1; RESULT = aux; :}
+                | tokTexto:a
+                {: Nodo aux=new Nodo("TEXTO"); aux.columna=aleft+1; aux.linea=aright+1; RESULT = aux; :}
+                | tokEntero:a
+                {: Nodo aux=new Nodo("ENTERO"); aux.columna=aleft+1; aux.linea=aright+1; RESULT = aux; :}
                 //| tokCaracter
                 //{: RESULT = new Nodo("CARACTER"); :}
                 ;
 
 LID::=          LID:lid tokComa tokId:id
-                {: lid.hijos.add(new Nodo(id)); RESULT = lid; :}
+                {: lid.columna=lidleft+1; lid.linea=lidright+1;
+                    Nodo aux=new Nodo(id);
+                    aux.columna=idleft+1;
+                    aux.linea=idright+1;
+                    lid.add(aux); 
+                    RESULT = lid; 
+                :}
                 | tokId:id
                 {:
                     Nodo aux = new Nodo("LISTA ID");
-                    aux.hijos.add(new Nodo(id));
+                    Nodo aux2= new Nodo(id);
+                    aux2.columna=idleft +1;
+                    aux2.linea=idright +1;
+                    aux.add(aux2);
                     RESULT = aux;
                 :}
                 ;                
@@ -293,16 +305,26 @@ LID::=          LID:lid tokComa tokId:id
 DECLARACION::=  TIPO:tipo LID:lid
                 {: 
                     Nodo aux=new Nodo("DECLARACION");
-                    aux.hijos.add(tipo);
-                    aux.hijos.add(lid);
+                    tipo.columna=tipoleft +1;
+                    tipo.linea=tiporight+1;
+                    lid.columna=lidleft+1;
+                    lid.linea=lidright +1;
+                    aux.add(tipo);
+                    aux.add(lid);
                     RESULT = aux;
                  :}
                 | TIPO:tipo LID:lid tokIgual EXP:exp
                 {:
                     Nodo aux=new Nodo("DECLARACION");
-                    aux.hijos.add(tipo);
-                    aux.hijos.add(lid);
-                    aux.hijos.add(exp);
+                    tipo.columna=tipoleft +1;
+                    tipo.linea=tiporight+1;
+                    lid.columna=lidleft+1;
+                    lid.linea=lidright +1;
+                    exp.columna=expleft+1;
+                    exp.linea=expright +1;
+                    aux.add(tipo);
+                    aux.add(lid);
+                    aux.add(exp);
                     RESULT = aux;
                  :}
                 ;
@@ -310,46 +332,51 @@ DECLARACION::=  TIPO:tipo LID:lid
 ASIGNACION::=   tokId:id tokIgual EXP:exp
                 {:
                     Nodo aux = new Nodo("ASIGNACION");
-                    aux.hijos.add(new Nodo(id));
-                    aux.hijos.add(exp);
+                    Nodo aux1=new Nodo(id);
+                    aux1.columna=idleft+1;
+                    aux1.linea=idright+1;
+                    exp.columna=expleft+1;
+                    exp.linea=expright+1;
+                    aux.add(aux1);
+                    aux.add(exp);
                     RESULT = aux;
                 :}
                 ;
 
 
-EXP::=          EXP:a tokMas EXP:b          {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("+")); aux.hijos.add(b); RESULT = aux; :}
-                | EXP:a tokMenos EXP:b      {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("-")); aux.hijos.add(b); RESULT = aux; :}
-                | EXP:a tokPor EXP:b        {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("*")); aux.hijos.add(b); RESULT = aux; :}
-                | EXP:a tokDiv EXP:b        {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("/")); aux.hijos.add(b); RESULT = aux; :}
-                | EXP:a tokModulo EXP:b     {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("%")); aux.hijos.add(b); RESULT = aux; :}
-                | EXP:a tokPotencia EXP:b   {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("^")); aux.hijos.add(b); RESULT = aux; :}
-                | EXP:a tokOr EXP:b         {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("||")); aux.hijos.add(b); RESULT = aux; :}
-                | EXP:a tokAnd EXP:b        {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("&&")); aux.hijos.add(b); RESULT = aux; :}
-                | tokNot EXP:a              {: Nodo aux=new Nodo("EXP"); aux.hijos.add(new Nodo("!")); aux.hijos.add(a); RESULT = aux; :}
-                | EXP:a tokIgualIgual EXP:b {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("==")); aux.hijos.add(b); RESULT = aux; :}
-                | EXP:a tokDiferente EXP:b  {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("!=")); aux.hijos.add(b); RESULT = aux; :}
-                | EXP:a tokMayorIgual EXP:b {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo(">=")); aux.hijos.add(b); RESULT = aux; :}
-                | EXP:a tokMenorIgual EXP:b {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("<=")); aux.hijos.add(b); RESULT = aux; :}
-                | EXP:a tokMayor EXP:b      {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo(">")); aux.hijos.add(b); RESULT = aux; :}
-                | EXP:a tokMenor EXP:b      {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); aux.hijos.add(new Nodo("<")); aux.hijos.add(b); RESULT = aux; :}
-                | tokApar EXP:a tokCpar     {: Nodo aux=new Nodo("EXP"); aux.hijos.add(a); :}
-                | tokNumero:num             {: Nodo aux = new Nodo("EXP"); Nodo tok=new Nodo("TOKNUMERO"); tok.hijos.add(new Nodo(num)); aux.hijos.add(tok); RESULT = aux; :}
-                //| tokModulo:mod             {: Nodo aux = new Nodo("EXP"); aux.hijos.add(new Nodo(mod)); RESULT = aux; :}
+EXP::=          EXP:a tokMas EXP:b          {: Nodo aux=new Nodo("EXP"); aux.add(a); aux.add(new Nodo("+")); aux.add(b); RESULT = aux; :}
+                | EXP:a tokMenos EXP:b      {: Nodo aux=new Nodo("EXP"); aux.add(a); aux.add(new Nodo("-")); aux.add(b); RESULT = aux; :}
+                | EXP:a tokPor EXP:b        {: Nodo aux=new Nodo("EXP"); aux.add(a); aux.add(new Nodo("*")); aux.add(b); RESULT = aux; :}
+                | EXP:a tokDiv EXP:b        {: Nodo aux=new Nodo("EXP"); aux.add(a); aux.add(new Nodo("/")); aux.add(b); RESULT = aux; :}
+                | EXP:a tokModulo EXP:b     {: Nodo aux=new Nodo("EXP"); aux.add(a); aux.add(new Nodo("%")); aux.add(b); RESULT = aux; :}
+                | EXP:a tokPotencia EXP:b   {: Nodo aux=new Nodo("EXP"); aux.add(a); aux.add(new Nodo("^")); aux.add(b); RESULT = aux; :}
+                | EXP:a tokOr EXP:b         {: Nodo aux=new Nodo("EXP"); aux.add(a); aux.add(new Nodo("||")); aux.add(b); RESULT = aux; :}
+                | EXP:a tokAnd EXP:b        {: Nodo aux=new Nodo("EXP"); aux.add(a); aux.add(new Nodo("&&")); aux.add(b); RESULT = aux; :}
+                | tokNot EXP:a              {: Nodo aux=new Nodo("EXP"); aux.add(new Nodo("!")); aux.add(a); RESULT = aux; :}
+                | EXP:a tokIgualIgual EXP:b {: Nodo aux=new Nodo("EXP"); aux.add(a); aux.add(new Nodo("==")); aux.add(b); RESULT = aux; :}
+                | EXP:a tokDiferente EXP:b  {: Nodo aux=new Nodo("EXP"); aux.add(a); aux.add(new Nodo("!=")); aux.add(b); RESULT = aux; :}
+                | EXP:a tokMayorIgual EXP:b {: Nodo aux=new Nodo("EXP"); aux.add(a); aux.add(new Nodo(">=")); aux.add(b); RESULT = aux; :}
+                | EXP:a tokMenorIgual EXP:b {: Nodo aux=new Nodo("EXP"); aux.add(a); aux.add(new Nodo("<=")); aux.add(b); RESULT = aux; :}
+                | EXP:a tokMayor EXP:b      {: Nodo aux=new Nodo("EXP"); aux.add(a); aux.add(new Nodo(">")); aux.add(b); RESULT = aux; :}
+                | EXP:a tokMenor EXP:b      {: Nodo aux=new Nodo("EXP"); aux.add(a); aux.add(new Nodo("<")); aux.add(b); RESULT = aux; :}
+                | tokApar EXP:a tokCpar     {: Nodo aux=new Nodo("EXP"); aux.add(a); :}
+                | tokNumero:num             {: Nodo aux = new Nodo("EXP"); Nodo tok=new Nodo("TOKNUMERO"); tok.add(new Nodo(num)); aux.add(tok); RESULT = aux; :}
+                //| tokModulo:mod             {: Nodo aux = new Nodo("EXP"); aux.add(new Nodo(mod)); RESULT = aux; :}
                 | tokString:cadena          {: String aux=cadena; aux=aux.replaceAll("\"",""); RESULT = new Nodo(aux); :}
                 //| tokChar:caracter          {: String aux=caracter; aux=aux.replaceAll("\'",""); RESULT = new Nodo(aux); :}                
-                | tokMenos EXP:a            {: Nodo aux=new Nodo("EXP"); aux.hijos.add(new Nodo("-")); aux.hijos.add(a); RESULT = aux; :}
-                | tokVerdadero:verdadero    {: Nodo aux = new Nodo("EXP"); Nodo tok=new Nodo("TOKVERDADERO"); tok.hijos.add(new Nodo(verdadero)); aux.hijos.add(tok); RESULT = aux; :}
-                | tokFalso:falso            {: Nodo aux = new Nodo("EXP"); Nodo tok=new Nodo("TOKFALSO"); tok.hijos.add(new Nodo(falso)); aux.hijos.add(tok); RESULT = aux; :}
-                | tokId:id                  {: Nodo aux = new Nodo("EXP"); aux.hijos.add(new Nodo(id)); RESULT = aux; :}
+                | tokMenos EXP:a            {: Nodo aux=new Nodo("EXP"); aux.add(new Nodo("-")); aux.add(a); RESULT = aux; :}
+                | tokVerdadero:verdadero    {: Nodo aux = new Nodo("EXP"); Nodo tok=new Nodo("TOKVERDADERO"); tok.add(new Nodo(verdadero)); aux.add(tok); RESULT = aux; :}
+                | tokFalso:falso            {: Nodo aux = new Nodo("EXP"); Nodo tok=new Nodo("TOKFALSO"); tok.add(new Nodo(falso)); aux.add(tok); RESULT = aux; :}
+                | tokId:id                  {: Nodo aux = new Nodo("ID"); aux.add(new Nodo(id)); RESULT = aux; :}
                 | LLAMADA
                 ;
 
 PRINCIPAL::=    tokVacio tokPrincipal tokApar tokCpar tokAlla MSENTS:msents tokClla
                 {:
                     Nodo aux=new Nodo("PRINCIPAL");
-                    aux.hijos.add(new Nodo("VACIO"));
-                    aux.hijos.add(new Nodo("PRINCIPAL"));
-                    aux.hijos.add(msents);
+                    aux.add(new Nodo("VACIO"));
+                    aux.add(new Nodo("PRINCIPAL"));
+                    aux.add(msents);
                     RESULT = aux;
                 :}
                 ;
@@ -357,7 +384,7 @@ PRINCIPAL::=    tokVacio tokPrincipal tokApar tokCpar tokAlla MSENTS:msents tokC
 FRETORNO::=     tokRetorno EXP:exp tokPcoma
                 {:
                     Nodo aux = new Nodo("RETORNO");
-                    aux.hijos.add(exp);
+                    aux.add(exp);
                     RESULT = aux;
                 :}
                 ;
@@ -377,18 +404,18 @@ CONTINUAR::=    tokContinuar tokPcoma
 FUNCION::=      TIPO:tipo tokId:id tokApar PARAMETROS:par tokCpar tokAlla FSENTS:fsents  tokClla
                 {:
                     Nodo aux = new Nodo("FUNCION");
-                    aux.hijos.add(tipo);
-                    aux.hijos.add(new Nodo(id));
-                    aux.hijos.add(par);
-                    aux.hijos.add(fsents);
+                    aux.add(tipo);
+                    aux.add(new Nodo(id));
+                    aux.add(par);
+                    aux.add(fsents);
                     RESULT = aux; 
                 :}
                 | TIPO:tipo tokId:id tokApar tokCpar tokAlla FSENTS:fsents  tokClla
                 {:
                     Nodo aux = new Nodo("FUNCION");
-                    aux.hijos.add(tipo);
-                    aux.hijos.add(new Nodo(id));
-                    aux.hijos.add(fsents);
+                    aux.add(tipo);
+                    aux.add(new Nodo(id));
+                    aux.add(fsents);
                     RESULT = aux; 
                 :}
                 ;
@@ -396,28 +423,28 @@ FUNCION::=      TIPO:tipo tokId:id tokApar PARAMETROS:par tokCpar tokAlla FSENTS
 METODO::=       tokVacio tokId:id tokApar PARAMETROS:par tokCpar tokAlla MSENTS:msents tokClla
                 {:
                     Nodo aux = new Nodo("METODO");
-                    aux.hijos.add(new Nodo("VACIO"));
-                    aux.hijos.add(new Nodo(id));
-                    aux.hijos.add(par);
-                    aux.hijos.add(msents);
+                    aux.add(new Nodo("VACIO"));
+                    aux.add(new Nodo(id));
+                    aux.add(par);
+                    aux.add(msents);
                     RESULT = aux;
                 :}
                 | tokVacio tokId:id tokApar tokCpar tokAlla MSENTS:msents tokClla
                 {:
                     Nodo aux = new Nodo("METODO");
-                    aux.hijos.add(new Nodo("VACIO"));
-                    aux.hijos.add(new Nodo(id));
-                    aux.hijos.add(msents);
+                    aux.add(new Nodo("VACIO"));
+                    aux.add(new Nodo(id));
+                    aux.add(msents);
                     RESULT = aux;
                 :}
                 ;
 
 PARAMETROS::=   PARAMETROS:pars tokComa PARAMETRO:par
-                {: pars.hijos.add(par); RESULT = pars; :} 
+                {: pars.add(par); RESULT = pars; :} 
                 | PARAMETRO:par
                 {:
                     Nodo aux = new Nodo("PARAMETROS");
-                    aux.hijos.add(par);
+                    aux.add(par);
                     RESULT = aux;
                 :} 
                 ;
@@ -425,18 +452,18 @@ PARAMETROS::=   PARAMETROS:pars tokComa PARAMETRO:par
 PARAMETRO::=    TIPO:tipo tokId:id
                 {:
                     Nodo aux=new Nodo("PARAMETRO");
-                    aux.hijos.add(tipo);
-                    aux.hijos.add(new Nodo(id));
+                    aux.add(tipo);
+                    aux.add(new Nodo(id));
                     RESULT = aux;
                 :}
                 ;
 
 LLAMADA::=      LLAMADA:llamada tokPunto LLAMAR:llamar
-                {: llamada.hijos.add(llamar); RESULT = llamada; :}
+                {: llamada.add(llamar); RESULT = llamada; :}
                 | LLAMAR:llamar
                 {:
                     Nodo aux = new Nodo("LLAMADA");
-                    aux.hijos.add(llamar);
+                    aux.add(llamar);
                     RESULT = aux;
                 :}
                 ;
@@ -444,24 +471,24 @@ LLAMADA::=      LLAMADA:llamada tokPunto LLAMAR:llamar
 LLAMAR::=       tokId:id tokApar PARAMETROSIN:parin tokCpar
                 {:
                     Nodo aux = new Nodo("LLAMAR");
-                    aux.hijos.add(new Nodo(id));
-                    aux.hijos.add(parin);
+                    aux.add(new Nodo(id));
+                    aux.add(parin);
                     RESULT = aux;
                 :}
                 | tokId:id tokApar tokCpar
                 {:
                     Nodo aux = new Nodo("LLAMAR");
-                    aux.hijos.add(new Nodo(id));
+                    aux.add(new Nodo(id));
                     RESULT = aux;
                 :}
                 ;      
 
 PARAMETROSIN::= PARAMETROSIN:pars tokComa PARAMETROIN:par 
-                {: pars.hijos.add(par); RESULT = pars; :}
+                {: pars.add(par); RESULT = pars; :}
                 | PARAMETROIN:par
                 {:
                     Nodo aux = new Nodo("PARAMETROSIN");
-                    aux.hijos.add(par);
+                    aux.add(par);
                     RESULT = aux;
                 :} 
                 ;
@@ -469,7 +496,7 @@ PARAMETROSIN::= PARAMETROSIN:pars tokComa PARAMETROIN:par
 PARAMETROIN::=  EXP:exp 
                 {:
                     Nodo aux = new Nodo("PARAMETROIN");
-                    aux.hijos.add(exp);
+                    aux.add(exp);
                     RESULT = aux;
                 :}
                 ;
@@ -478,17 +505,17 @@ PARAMETROIN::=  EXP:exp
 //ES_VERDADERO::= tokEsVerdadero tokApar EXP:exp tokCpar tokAlla SENTS:sents tokClla
 //                {:
 //                    Nodo aux = new Nodo("ES_VERDADERO");
-//                    aux.hijos.add(exp);
-//                    aux.hijos.add(sents);
+//                    aux.add(exp);
+//                    aux.add(sents);
 //                    RESULT = aux;
 //                :}
 //                | tokEsVerdadero tokApar EXP:exp tokCpar tokAlla SENTS:sents tokClla tokEsFalso tokAlla SENTS:sents2 tokClla
 //                {:
 //                    Nodo aux = new Nodo("ES_VERDADERO");
-//                    aux.hijos.add(exp);
-//                    aux.hijos.add(sents);
-//                    //aux.hijos.add(new Nodo("ES_FALSO"));
-//                    aux.hijos.add(sents2);
+//                    aux.add(exp);
+//                    aux.add(sents);
+//                    //aux.add(new Nodo("ES_FALSO"));
+//                    aux.add(sents2);
 //                    RESULT = aux;
 //                :}
 //                ;
@@ -496,26 +523,26 @@ PARAMETROIN::=  EXP:exp
 //CAMBIAR_A::=    tokCambiarA tokApar EXP:exp tokCpar tokAlla VALORES:valores tokClla
 //                {:
 //                    Nodo aux = new Nodo("CAMBIAR_A");
-//                    aux.hijos.add(exp);
-//                    aux.hijos.add(valores);
+//                    aux.add(exp);
+//                    aux.add(valores);
 //                    RESULT = aux; 
 //                :}
 //                | tokCambiarA tokApar EXP:exp tokCpar tokAlla VALORES:valores tokNoCumple tokDosp SENTS:sents tokClla
 //                {:
 //                    Nodo aux = new Nodo("CAMBIAR_A");
-//                    aux.hijos.add(exp);
-//                    aux.hijos.add(valores);
-//                    aux.hijos.add(sents);
+//                    aux.add(exp);
+//                    aux.add(valores);
+//                    aux.add(sents);
 //                    RESULT = aux;
 //                :}
 //                ;
 
 //VALORES::=      VALORES:valores VALOR:valor
-//                {: valores.hijos.add(valor); RESULT = valores; :} 
+//                {: valores.add(valor); RESULT = valores; :} 
 //                | VALOR:valor
 //                {:
 //                    Nodo aux = new Nodo("VALORES");
-//                    aux.hijos.add(valor);
+//                    aux.add(valor);
 //                    RESULT = aux;
 //                :} 
 //                ;
@@ -523,8 +550,8 @@ PARAMETROIN::=  EXP:exp
 //VALOR::=        tokValor TIPODATO:tipo tokDosp SENTS:sents
 //                {:
 //                    Nodo aux = new Nodo("VALOR");
-//                    aux.hijos.add(tipo);
-//                    aux.hijos.add(sents);
+//                    aux.add(tipo);
+//                    aux.add(sents);
 //                    RESULT = aux; 
 //                :} 
 //                ;
@@ -542,10 +569,10 @@ TIPODATO::=     tokNumero:num
 //PARA::=         tokPara tokApar ASIG_PARA:asig tokPcoma EXP:exp tokPcoma INCRE_DECRE:inc tokCpar tokAlla SENTS:sents tokClla
 //                {:
 //                    Nodo aux = new Nodo("PARA");
-//                    aux.hijos.add(asig);
-//                    aux.hijos.add(exp);
-//                    aux.hijos.add(inc);
-//                    aux.hijos.add(sents);
+//                    aux.add(asig);
+//                    aux.add(exp);
+//                    aux.add(inc);
+//                    aux.add(sents);
 //                    RESULT = aux;
 //                :}
 //                ;
@@ -553,17 +580,17 @@ TIPODATO::=     tokNumero:num
 ASIG_PARA::=    tokEntero tokId:id tokIgual EXP:exp
                 {:
                     Nodo aux = new Nodo("ASIG_PARA");
-                    aux.hijos.add(new Nodo("ENTERO"));
-                    aux.hijos.add(new Nodo(id));
-                    aux.hijos.add(exp);
+                    aux.add(new Nodo("ENTERO"));
+                    aux.add(new Nodo(id));
+                    aux.add(exp);
                     RESULT = aux;
                 :}
                 | tokDecimal tokId:id tokIgual EXP:exp
                 {:
                     Nodo aux = new Nodo("ASIG_PARA");
-                    aux.hijos.add(new Nodo("DECIMAL"));
-                    aux.hijos.add(new Nodo(id));
-                    aux.hijos.add(exp);
+                    aux.add(new Nodo("DECIMAL"));
+                    aux.add(new Nodo(id));
+                    aux.add(exp);
                     RESULT = aux;
                 :}
                 ;
@@ -577,8 +604,8 @@ INCRE_DECRE::=  tokMasMas
 //HASTA_QUE::=    tokHastaQue tokApar EXP:exp tokCpar tokAlla SENTS:sents tokClla
 //                {:
 //                    Nodo aux = new Nodo("HASTA_QUE");
-//                    aux.hijos.add(exp);
-//                    aux.hijos.add(sents);
+//                    aux.add(exp);
+//                    aux.add(sents);
 //                    RESULT = aux; 
 //                :}
 //                ;
@@ -586,34 +613,34 @@ INCRE_DECRE::=  tokMasMas
 //MIENTRAS_QUE::= tokMientrasQue tokApar EXP:exp tokCpar tokAlla SENTS:sents tokClla
 //                {:
 //                    Nodo aux = new Nodo("MIENTRAS_QUE");
-//                    aux.hijos.add(exp);
-//                    aux.hijos.add(sents);
+//                    aux.add(exp);
+//                    aux.add(sents);
 //                    RESULT = aux; 
 //                :}
 //                ;
 
-MOSTRAR::=      tokMostrar tokApar LEXP:lexp tokCpar
+MOSTRAR::=      tokMostrar tokApar EXP:lexp tokCpar
                 {:
                     Nodo aux = new Nodo("MOSTRAR");
-                    aux.hijos.add(lexp);
+                    aux.add(lexp);
                     RESULT = aux;
                 :}
                 ;
 
-LEXP::=         LEXP:lexp tokComa EXP:exp
-                {: lexp.hijos.add(exp); RESULT = lexp; :}
-                | EXP:exp
-                {:
-                    Nodo aux = new Nodo("LEXP");
-                    aux.hijos.add(exp);
-                    RESULT = aux;
-                :}
-                ;
+//LEXP::=         LEXP:lexp tokComa EXP:exp
+//                {: lexp.add(exp); RESULT = lexp; :}
+//                | EXP:exp
+//                {:
+//                    Nodo aux = new Nodo("LEXP");
+//                    aux.add(exp);
+//                    RESULT = aux;
+//                :}
+//                ;
 
 DIBUJAR_AST::=  tokDibujarAST tokApar tokId:id tokCpar
                 {:
                     Nodo aux = new Nodo("DIBUJAR_AST");
-                    aux.hijos.add(new Nodo(id));
+                    aux.add(new Nodo(id));
                     RESULT = aux;
                 :}
                 ;
@@ -621,7 +648,7 @@ DIBUJAR_AST::=  tokDibujarAST tokApar tokId:id tokCpar
 DIBUJAR_EXP::=  tokDibujarExp tokApar EXP:exp tokCpar
                 {:
                     Nodo aux = new Nodo("DIBUJAR_EXP");
-                    aux.hijos.add(exp);
+                    aux.add(exp);
                     RESULT = aux;
                 :}
                 ;
@@ -637,17 +664,17 @@ DIBUJAR_TS::=   tokDibujarTS tokApar tokCpar
 MES_VERDADERO::= tokEsVerdadero tokApar EXP:exp tokCpar tokAlla MSENTS:sents tokClla
                 {:
                     Nodo aux = new Nodo("ES_VERDADERO");
-                    aux.hijos.add(exp);
-                    aux.hijos.add(sents);
+                    aux.add(exp);
+                    aux.add(sents);
                     RESULT = aux;
                 :}
                 | tokEsVerdadero tokApar EXP:exp tokCpar tokAlla MSENTS:sents tokClla tokEsFalso tokAlla MSENTS:sents2 tokClla
                 {:
                     Nodo aux = new Nodo("ES_VERDADERO");
-                    aux.hijos.add(exp);
-                    aux.hijos.add(sents);
-                    //aux.hijos.add(new Nodo("ES_FALSO"));
-                    aux.hijos.add(sents2);
+                    aux.add(exp);
+                    aux.add(sents);
+                    //aux.add(new Nodo("ES_FALSO"));
+                    aux.add(sents2);
                     RESULT = aux;
                 :}
                 ;
@@ -655,26 +682,26 @@ MES_VERDADERO::= tokEsVerdadero tokApar EXP:exp tokCpar tokAlla MSENTS:sents tok
 MCAMBIAR_A::=    tokCambiarA tokApar EXP:exp tokCpar tokAlla MVALORES:valores tokClla
                 {:
                     Nodo aux = new Nodo("CAMBIAR_A");
-                    aux.hijos.add(exp);
-                    aux.hijos.add(valores);
+                    aux.add(exp);
+                    aux.add(valores);
                     RESULT = aux; 
                 :}
                 | tokCambiarA tokApar EXP:exp tokCpar tokAlla MVALORES:valores tokNoCumple tokDosp MSENTS:sents tokClla
                 {:
                     Nodo aux = new Nodo("CAMBIAR_A");
-                    aux.hijos.add(exp);
-                    aux.hijos.add(valores);
-                    aux.hijos.add(sents);
+                    aux.add(exp);
+                    aux.add(valores);
+                    aux.add(sents);
                     RESULT = aux;
                 :}
                 ;
 
 MVALORES::=      MVALORES:valores MVALOR:valor
-                {: valores.hijos.add(valor); RESULT = valores; :}
+                {: valores.add(valor); RESULT = valores; :}
                 | MVALOR:valor
                 {:
                     Nodo aux = new Nodo("VALORES");
-                    aux.hijos.add(valor);
+                    aux.add(valor);
                     RESULT = aux;
                 :}
                 ;
@@ -682,8 +709,8 @@ MVALORES::=      MVALORES:valores MVALOR:valor
 MVALOR::=        tokValor TIPODATO:tipo tokDosp MSENTS:sents
                 {:
                     Nodo aux = new Nodo("VALOR");
-                    aux.hijos.add(tipo);
-                    aux.hijos.add(sents);
+                    aux.add(tipo);
+                    aux.add(sents);
                     RESULT = aux;
                 :}
                 ;
@@ -691,10 +718,10 @@ MVALOR::=        tokValor TIPODATO:tipo tokDosp MSENTS:sents
 MPARA::=         tokPara tokApar ASIG_PARA:asig tokPcoma EXP:exp tokPcoma INCRE_DECRE:inc tokCpar tokAlla MSENTS:sents tokClla
                 {:
                     Nodo aux = new Nodo("PARA");
-                    aux.hijos.add(asig);
-                    aux.hijos.add(exp);
-                    aux.hijos.add(inc);
-                    aux.hijos.add(sents);
+                    aux.add(asig);
+                    aux.add(exp);
+                    aux.add(inc);
+                    aux.add(sents);
                     RESULT = aux;
                 :}
                 ;
@@ -702,8 +729,8 @@ MPARA::=         tokPara tokApar ASIG_PARA:asig tokPcoma EXP:exp tokPcoma INCRE_
 MHASTA_QUE::=    tokHastaQue tokApar EXP:exp tokCpar tokAlla MSENTS:sents tokClla
                 {:
                     Nodo aux = new Nodo("HASTA_QUE");
-                    aux.hijos.add(exp);
-                    aux.hijos.add(sents);
+                    aux.add(exp);
+                    aux.add(sents);
                     RESULT = aux; 
                 :}
                 ;
@@ -711,8 +738,8 @@ MHASTA_QUE::=    tokHastaQue tokApar EXP:exp tokCpar tokAlla MSENTS:sents tokCll
 MMIENTRAS_QUE::= tokMientrasQue tokApar EXP:exp tokCpar tokAlla MSENTS:sents tokClla
                 {:
                     Nodo aux = new Nodo("MIENTRAS_QUE");
-                    aux.hijos.add(exp);
-                    aux.hijos.add(sents);
+                    aux.add(exp);
+                    aux.add(sents);
                     RESULT = aux; 
                 :}
                 ;
@@ -721,17 +748,17 @@ MMIENTRAS_QUE::= tokMientrasQue tokApar EXP:exp tokCpar tokAlla MSENTS:sents tok
 FES_VERDADERO::= tokEsVerdadero tokApar EXP:exp tokCpar tokAlla FSENTS:sents tokClla
                 {:
                     Nodo aux = new Nodo("ES_VERDADERO");
-                    aux.hijos.add(exp);
-                    aux.hijos.add(sents);
+                    aux.add(exp);
+                    aux.add(sents);
                     RESULT = aux;
                 :}
                 | tokEsVerdadero tokApar EXP:exp tokCpar tokAlla FSENTS:sents tokClla tokEsFalso tokAlla FSENTS:sents2 tokClla
                 {:
                     Nodo aux = new Nodo("ES_VERDADERO");
-                    aux.hijos.add(exp);
-                    aux.hijos.add(sents);
-                    //aux.hijos.add(new Nodo("ES_FALSO"));
-                    aux.hijos.add(sents2);
+                    aux.add(exp);
+                    aux.add(sents);
+                    //aux.add(new Nodo("ES_FALSO"));
+                    aux.add(sents2);
                     RESULT = aux;
                 :}
                 ;
@@ -739,26 +766,26 @@ FES_VERDADERO::= tokEsVerdadero tokApar EXP:exp tokCpar tokAlla FSENTS:sents tok
 FCAMBIAR_A::=    tokCambiarA tokApar EXP:exp tokCpar tokAlla FVALORES:valores tokClla
                 {:
                     Nodo aux = new Nodo("CAMBIAR_A");
-                    aux.hijos.add(exp);
-                    aux.hijos.add(valores);
+                    aux.add(exp);
+                    aux.add(valores);
                     RESULT = aux; 
                 :}
                 | tokCambiarA tokApar EXP:exp tokCpar tokAlla FVALORES:valores tokNoCumple tokDosp FSENTS:sents tokClla
                 {:
                     Nodo aux = new Nodo("CAMBIAR_A");
-                    aux.hijos.add(exp);
-                    aux.hijos.add(valores);
-                    aux.hijos.add(sents);
+                    aux.add(exp);
+                    aux.add(valores);
+                    aux.add(sents);
                     RESULT = aux;
                 :}
                 ;
 
 FVALORES::=      FVALORES:valores FVALOR:valor
-                {: valores.hijos.add(valor); RESULT = valores; :}
+                {: valores.add(valor); RESULT = valores; :}
                 | FVALOR:valor
                 {:
                     Nodo aux = new Nodo("VALORES");
-                    aux.hijos.add(valor);
+                    aux.add(valor);
                     RESULT = aux;
                 :}
                 ;
@@ -766,8 +793,8 @@ FVALORES::=      FVALORES:valores FVALOR:valor
 FVALOR::=        tokValor TIPODATO:tipo tokDosp FSENTS:sents
                 {:
                     Nodo aux = new Nodo("VALOR");
-                    aux.hijos.add(tipo);
-                    aux.hijos.add(sents);
+                    aux.add(tipo);
+                    aux.add(sents);
                     RESULT = aux;
                 :}
                 ;
@@ -775,10 +802,10 @@ FVALOR::=        tokValor TIPODATO:tipo tokDosp FSENTS:sents
 FPARA::=         tokPara tokApar ASIG_PARA:asig tokPcoma EXP:exp tokPcoma INCRE_DECRE:inc tokCpar tokAlla FSENTS:sents tokClla
                 {:
                     Nodo aux = new Nodo("PARA");
-                    aux.hijos.add(asig);
-                    aux.hijos.add(exp);
-                    aux.hijos.add(inc);
-                    aux.hijos.add(sents);
+                    aux.add(asig);
+                    aux.add(exp);
+                    aux.add(inc);
+                    aux.add(sents);
                     RESULT = aux;
                 :}
                 ;
@@ -786,8 +813,8 @@ FPARA::=         tokPara tokApar ASIG_PARA:asig tokPcoma EXP:exp tokPcoma INCRE_
 FHASTA_QUE::=    tokHastaQue tokApar EXP:exp tokCpar tokAlla FSENTS:sents tokClla
                 {:
                     Nodo aux = new Nodo("HASTA_QUE");
-                    aux.hijos.add(exp);
-                    aux.hijos.add(sents);
+                    aux.add(exp);
+                    aux.add(sents);
                     RESULT = aux; 
                 :}
                 ;
@@ -795,8 +822,8 @@ FHASTA_QUE::=    tokHastaQue tokApar EXP:exp tokCpar tokAlla FSENTS:sents tokCll
 FMIENTRAS_QUE::= tokMientrasQue tokApar EXP:exp tokCpar tokAlla FSENTS:sents tokClla
                 {:
                     Nodo aux = new Nodo("MIENTRAS_QUE");
-                    aux.hijos.add(exp);
-                    aux.hijos.add(sents);
+                    aux.add(exp);
+                    aux.add(sents);
                     RESULT = aux; 
                 :}
                 ;
