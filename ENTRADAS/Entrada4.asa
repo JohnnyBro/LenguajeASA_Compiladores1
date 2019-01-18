@@ -1,0 +1,20 @@
+Vacio Principal()
+{
+	cambiar_a(10){
+		valor 1:
+		mostrar("1");
+		valor 3:
+		mostrar("3");
+		valor 5:
+		mostrar("5");
+		romper;
+		valor 10:
+		mostrar("10");
+		valor 11:
+		mostrar("11");
+
+	}
+		DibujarEXP( 45*2+"hola" );
+		DibujarEXP( 15*5+verdadero>=(60+5)*2 );
+	              DibujarEXP(factorial(5,25,30,"hola") >= (60+5)*num1);
+}

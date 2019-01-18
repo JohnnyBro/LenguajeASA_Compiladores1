@@ -5,6 +5,7 @@ import Analizadores.Nodo;
 import Analizadores.Sintactico;
 import GUI.PanelPrincipal;
 import Interprete.Interprete;
+import Interprete.Metodo;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import javax.swing.JOptionPane;
 public class Compilador
 {
     //public static ArrayList<ErrorT> lista_errores;
+    public StringBuilder e = new StringBuilder();
     
     public void analizar(String entrada, Data d)
     {
@@ -26,6 +28,8 @@ public class Compilador
         Lexico analizador_lexico =  new Lexico(reader);
         Sintactico analizador_sintactico = new Sintactico(analizador_lexico);
         Interprete inter = new Interprete();
+        Reportes.ReporteErrores err=new Reportes.ReporteErrores();
+        
         
         
         
@@ -40,23 +44,18 @@ public class Compilador
         analizador_lexico.lista_errores = d.lista_errores;
         analizador_sintactico.lista_errores = d.lista_errores;
         inter.LSemanticos=d.lista_errores;
+        err.lista_errores=d.lista_errores;
         //lista_errores=d.lista_errores;
         
       
-        
+        e.append("\n");
             try
         {
             analizador_sintactico.parse();
             d.raiz = analizador_sintactico.raiz;
             inter.Interprete(d.raiz);
-            
-            
             //
             
-            PanelPrincipal.txtConsola.setText(inter.consola.toString());
-            
-            Graficador g= new Graficador();
-            g.graficarAST(d.raiz);
            
         }
         catch (Exception ex)
@@ -65,41 +64,37 @@ public class Compilador
             System.out.println("! ============================================================ Analisis Abortado");
             JOptionPane.showMessageDialog(null,"Analisis abortado","Proyecto 2 - JFLex/Cup y AST",JOptionPane.ERROR_MESSAGE);
             
-            GUI.PanelPrincipal panel=new PanelPrincipal();
+           
             
-            return;
+            
+            
         }
-        if(analizador_lexico.lista_errores.size()==0 && analizador_sintactico.lista_errores.size()==0)
+        
+        if (d.lista_errores.size() != 0) {
+
+            for (ErrorT n : d.lista_errores) {
+
+                e.append("Error " + n.tipo + ": ");
+                e.append("Lexema: " + n.lexema + " ");
+                e.append("Linea: " + n.linea + " ");
+                e.append("Columna: " + n.columna + " ");
+                e.append("Descripcion: " + n.descripcion);
+                e.append("\n");
+            }
+            err.generarReporteErrores();
+            JOptionPane.showMessageDialog(null, "Existen Errores", "Proyecto 2 - JFLex/Cup y AST", JOptionPane.ERROR_MESSAGE);
+        } else 
         {
+            err.generarReporteErrores();
             System.out.println("! ============================================================ Analisis Completado");
-        JOptionPane.showMessageDialog(null,"Analisis terminado con exito","Ejemplo 3 - JFLex/Cup y AST",JOptionPane.INFORMATION_MESSAGE);
-        }else
-        {
-            PanelPrincipal panel=new PanelPrincipal();
-            JOptionPane.showMessageDialog(null,"Existen Errores","Proyecto 2 - JFLex/Cup y AST",JOptionPane.ERROR_MESSAGE);
-            int l1=analizador_lexico.lista_errores.size();
-            int l2=analizador_sintactico.lista_errores.size();
-            
-//            if(l1>0)
-//            {
-//                for(int i=0; i<l1;i++)
-//                {
-//                     panel.mostrarErrores(analizador_lexico.lista_errores.get(i).tipo+"**** "+analizador_lexico.lista_errores.get(i).lexema+" "+
-//                     analizador_lexico.lista_errores.get(i).linea+" "+analizador_lexico.lista_errores.get(i).columna+" "+analizador_lexico.lista_errores.get(i).descripcion);
-//                }
-//            }
-//            
-//            if(l2>0)
-//            {
-//                for(int i=0; i<l2;i++)
-//                {
-//                    panel.mostrarErrores(analizador_sintactico.lista_errores.get(i).tipo+" "+analizador_sintactico.lista_errores.get(i).lexema+" "+
-//                     analizador_sintactico.lista_errores.get(i).linea+" "+analizador_sintactico.lista_errores.get(i).columna+" "+analizador_sintactico.lista_errores.get(i).descripcion);
-//                }
-//            }
-            
-            return;
+            JOptionPane.showMessageDialog(null, "Analisis terminado con exito", "Ejemplo 3 - JFLex/Cup y AST", JOptionPane.INFORMATION_MESSAGE);
         }
+        
+        e.append(inter.consola.toString());
+
+        PanelPrincipal.txtConsola.setText(e.toString());
+        Graficador g = new Graficador();
+        g.graficarAST(d.raiz);
         
     }      
     

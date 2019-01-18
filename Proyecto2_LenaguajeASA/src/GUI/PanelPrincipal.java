@@ -6,6 +6,7 @@
 package GUI;
 
 import Acciones.*;
+import Reportes.*;
 import Interprete.Interprete;
 import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 import java.awt.Component;
@@ -50,6 +51,10 @@ public class PanelPrincipal extends javax.swing.JFrame {
         Pestanas = new javax.swing.JTabbedPane();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtConsola = new javax.swing.JEditorPane();
+        PanelEXP = new javax.swing.JLabel();
+        PanelAST = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         itemNuevo = new javax.swing.JMenuItem();
@@ -59,10 +64,22 @@ public class PanelPrincipal extends javax.swing.JFrame {
         itemSalir = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         itemEjecutar = new javax.swing.JMenuItem();
+        jMenu3 = new javax.swing.JMenu();
+        itemAlbum = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jScrollPane1.setViewportView(txtConsola);
+
+        PanelEXP.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        PanelEXP.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 3, true));
+
+        PanelAST.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 3, true));
+
+        jLabel2.setText("IMAGEN EXPRESION");
+
+        jLabel3.setText("IMAGEN AST");
 
         jMenu1.setText("Archivo");
 
@@ -120,6 +137,26 @@ public class PanelPrincipal extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu2);
 
+        jMenu3.setText("Reportes");
+
+        itemAlbum.setText("Errores");
+        itemAlbum.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemAlbumActionPerformed(evt);
+            }
+        });
+        jMenu3.add(itemAlbum);
+
+        jMenuItem2.setText("Abrir album");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu3.add(jMenuItem2);
+
+        jMenuBar1.add(jMenu3);
+
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -131,16 +168,41 @@ public class PanelPrincipal extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(Pestanas, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE))
-                .addContainerGap(227, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(PanelEXP, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(45, 45, 45)
+                        .addComponent(jLabel3)
+                        .addGap(48, 48, 48))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(PanelAST, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(21, 21, 21))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addGap(332, 332, 332))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(Pestanas, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(PanelEXP, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(290, 290, 290)
+                                .addComponent(jLabel3)))
+                        .addGap(18, 18, 18)
+                        .addComponent(PanelAST, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(Pestanas, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
 
         pack();
@@ -271,6 +333,19 @@ public class PanelPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_itemEjecutarActionPerformed
 
+    private void itemAlbumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemAlbumActionPerformed
+        // TODO add your handling code here:
+        
+        Varios var= new Varios();
+        var.autoAbrir("/home/johnnybravo/SalidasDot_Pro2/Errores.html");
+    }//GEN-LAST:event_itemAlbumActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        // TODO add your handling code here:
+        Varios var= new Varios();
+        var.autoAbrir("/home/johnnybravo/SalidasDot_Pro2");
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
     /**
      * 
      * @param entrada Parametro de tipo String que contiene los errores de las listas
@@ -330,16 +405,23 @@ public class PanelPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public static javax.swing.JLabel PanelAST;
+    public static javax.swing.JLabel PanelEXP;
     private javax.swing.JTabbedPane Pestanas;
     private javax.swing.JMenuItem itemAbrir;
+    private javax.swing.JMenuItem itemAlbum;
     private javax.swing.JMenuItem itemCerrar;
     private javax.swing.JMenuItem itemEjecutar;
     private javax.swing.JMenuItem itemGuardar;
     private javax.swing.JMenuItem itemNuevo;
     private javax.swing.JMenuItem itemSalir;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JScrollPane jScrollPane1;
     public static javax.swing.JEditorPane txtConsola;
     // End of variables declaration//GEN-END:variables

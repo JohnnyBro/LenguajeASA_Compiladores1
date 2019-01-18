@@ -1,6 +1,7 @@
 package Acciones;
 
 import Analizadores.Nodo;
+import GUI.PanelPrincipal;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -30,7 +31,8 @@ public class Graficador
     public void graficarAST(Nodo raiz)
     {   
         this.armar_Cuerpo_dot(raiz);                
-        this.crearGrafo();        
+        this.crearGrafo();  
+        //rsscalelabel.RSScaleLabel.setScaleLabel(PanelPrincipal.PanelAST_GEN, ruta_png);
         Varios v = new Varios();
         v.autoAbrir(ruta_png);        
     }

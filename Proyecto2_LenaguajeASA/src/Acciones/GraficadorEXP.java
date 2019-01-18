@@ -6,10 +6,17 @@
 package Acciones;
 
 import Analizadores.Nodo;
+import GUI.PanelPrincipal;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -32,10 +39,14 @@ public class GraficadorEXP {
         ruta_png = System.getProperty("user.home") + File.separator +"SalidasDot_Pro2"+File.separator+"exp.png"; 
     }    
     
-    public void graficarAST(Nodo raiz)
+    public void graficarAST(Nodo raiz) 
     {   
         this.armar_Cuerpo_dot(raiz);                
-        this.crearGrafo();        
+        this.crearGrafo();
+        //Image imagenext=new ImageIcon(ruta_png).getImage();
+        //PanelPrincipal.panelAST
+        //PanelPrincipal.PanelEXP.imageUpdate(imagenext, 0, 0, 0, 300, 300);
+        //rsscalelabel.RSScaleLabel.setScaleLabel(PanelPrincipal.PanelEXP, ruta_png);
         Varios v = new Varios();
         v.autoAbrir(ruta_png);        
     }
@@ -104,6 +115,24 @@ public class GraficadorEXP {
             buffer.append("\"node").append(temp.id).append("\";\n");
             enlazarNodos(temp, buffer);
         }
+    }
+
+    public BufferedImage ajustarImagen(String ruta_png) {
+        BufferedImage bf=null;
+        
+        try {
+            bf=ImageIO.read(new File(ruta_png));
+        } catch (Exception e) {
+            Logger.getLogger(Image.class.getName()).log(Level.SEVERE,null, e);
+        }
+        int ancho=200;
+        int alto=200;
+        BufferedImage bufin=new BufferedImage(ancho, alto, bf.getType());
+        Graphics2D g= bufin.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g.drawImage(bf, 0, 0, ancho,alto, 0, 0,ancho,alto,null);
+        g.dispose();
+        return bufin;
     }
     
 }

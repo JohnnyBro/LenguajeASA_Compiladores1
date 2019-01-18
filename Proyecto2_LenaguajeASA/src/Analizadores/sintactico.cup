@@ -375,29 +375,29 @@ ASIGNACION::=   tokId:id tokIgual EXP:exp
                 ;
 
 
-EXP::=          EXP:a tokMas:c EXP:b          {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("+")); b.columna=aleft+1; b.linea=aright+1; aux.add(b); RESULT = aux; :}
-                | EXP:a tokMenos:c EXP:b      {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("-")); b.columna=aleft+1; b.linea=aright+1; aux.add(b); RESULT = aux; :}
-                | EXP:a tokPor:c EXP:b        {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("*")); b.columna=aleft+1; b.linea=aright+1; aux.add(b); RESULT = aux; :}
-                | EXP:a tokDiv:c EXP:b        {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("/")); b.columna=aleft+1; b.linea=aright+1; aux.add(b); RESULT = aux; :}
-                | EXP:a tokModulo:c EXP:b     {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("%")); b.columna=aleft+1; b.linea=aright+1; aux.add(b); RESULT = aux; :}
-                | EXP:a tokPotencia:c EXP:b   {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("^")); b.columna=aleft+1; b.linea=aright+1; aux.add(b); RESULT = aux; :}
-                | EXP:a tokOr:c EXP:b         {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("||")); b.columna=aleft+1; b.linea=aright+1;  aux.add(b); RESULT = aux; :}
-                | EXP:a tokAnd:c EXP:b        {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("&&")); b.columna=aleft+1; b.linea=aright+1;  aux.add(b); RESULT = aux; :}
+EXP::=          EXP:a tokMas:c EXP:b          {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("+"));  aux.add(b); RESULT = aux; :}
+                | EXP:a tokMenos:c EXP:b      {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("-"));  aux.add(b); RESULT = aux; :}
+                | EXP:a tokPor:c EXP:b        {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("*"));  aux.add(b); RESULT = aux; :}
+                | EXP:a tokDiv:c EXP:b        {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("/"));  aux.add(b); RESULT = aux; :}
+                | EXP:a tokModulo:c EXP:b     {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("%"));  aux.add(b); RESULT = aux; :}
+                | EXP:a tokPotencia:c EXP:b   {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("^"));  aux.add(b); RESULT = aux; :}
+                | EXP:a tokOr:c EXP:b         {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("||"));   aux.add(b); RESULT = aux; :}
+                | EXP:a tokAnd:c EXP:b        {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("&&"));   aux.add(b); RESULT = aux; :}
                 | tokNot EXP:a                {: Nodo aux=new Nodo("EXP"); aux.add(new Nodo("!")); a.columna=aleft+1; a.linea=aright+1; aux.add(a); RESULT = aux; :}
-                | EXP:a tokIgualIgual EXP:b   {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("==")); b.columna=aleft+1; b.linea=aright+1;  aux.add(b); RESULT = aux; :}
-                | EXP:a tokDiferente EXP:b    {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("!=")); b.columna=aleft+1; b.linea=aright+1;  aux.add(b); RESULT = aux; :}
-                | EXP:a tokMayorIgual EXP:b   {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo(">=")); b.columna=aleft+1; b.linea=aright+1;  aux.add(b); RESULT = aux; :}
-                | EXP:a tokMenorIgual EXP:b   {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("<=")); b.columna=aleft+1; b.linea=aright+1;  aux.add(b); RESULT = aux; :}
-                | EXP:a tokMayor EXP:b        {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo(">")); b.columna=aleft+1; b.linea=aright+1; aux.add(b); RESULT = aux; :}
-                | EXP:a tokMenor EXP:b        {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("<")); b.columna=aleft+1; b.linea=aright+1; aux.add(b); RESULT = aux; :}
-                | tokApar EXP:a tokCpar       {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); :}
+                | EXP:a tokIgualIgual EXP:b   {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("=="));  aux.add(b); RESULT = aux; :}
+                | EXP:a tokDiferente EXP:b    {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("!="));  aux.add(b); RESULT = aux; :}
+                | EXP:a tokMayorIgual EXP:b   {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo(">="));  aux.add(b); RESULT = aux; :}
+                | EXP:a tokMenorIgual EXP:b   {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("<="));  aux.add(b); RESULT = aux; :}
+                | EXP:a tokMayor EXP:b        {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo(">")); aux.add(b); RESULT = aux; :}
+                | EXP:a tokMenor EXP:b        {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); aux.add(new Nodo("<")); aux.add(b); RESULT = aux; :}
+                | tokApar EXP:a tokCpar       {: Nodo aux=new Nodo("EXP"); a.columna=aleft+1; a.linea=aright+1; aux.add(a); RESULT = aux; :}
                 | tokNumero:num               {: Nodo aux=new Nodo("EXP"); Nodo tok=new Nodo("TOKNUMERO"); Nodo aux2=new Nodo(num); aux2.columna=numleft+1; aux2.linea=numright+1; tok.add(aux2); aux.add(tok); RESULT = aux; :}
                 | tokString:cadena            {: Nodo exp=new Nodo("EXP"); Nodo str=new Nodo("TOKSTRING"); String aux=cadena; aux=aux.replaceAll("\"",""); Nodo cad=new Nodo(aux); cad.columna=cadenaleft+1; cad.linea=cadenaright+1; str.add(cad); exp.add(str); RESULT = exp; :}
                 | tokMenos:a EXP:b            {: Nodo aux=new Nodo("EXP"); Nodo aux1=new Nodo("-"); aux1.columna=aleft+1; aux1.linea=aright+1; aux.add(aux1); aux.add(b); RESULT = aux; :}
                 | tokVerdadero:verdadero      {: Nodo aux=new Nodo("EXP"); Nodo tok=new Nodo("TOKVERDADERO"); Nodo ver=new Nodo(verdadero); ver.columna=verdaderoleft+1; ver.linea=verdaderoright+1; tok.add(ver); aux.add(tok); RESULT = aux; :}
                 | tokFalso:falso              {: Nodo aux=new Nodo("EXP"); Nodo tok=new Nodo("TOKFALSO"); Nodo fal=new Nodo(falso); fal.columna=falsoleft+1; fal.linea=falsoright+1; tok.add(fal); aux.add(tok); RESULT = aux; :}
                 | tokId:id                    {: Nodo aux=new Nodo("EXP"); Nodo aux1=new Nodo("ID"); Nodo aux2=new Nodo(id); aux2.columna=idleft+1; aux2.linea=idright+1; aux1.add(aux2); aux.add(aux1); RESULT = aux; :}
-                | LLAMAR:a                   {: RESULT=a;:}                   
+                | LLAMAR:a                    {: RESULT=a;:}                   
                 ;
 
 PRINCIPAL::=    tokVacio tokPrincipal tokApar tokCpar tokAlla MSENTS:msents tokClla
@@ -595,11 +595,11 @@ PARAMETROSIN::= PARAMETROSIN:pars tokComa PARAMETROIN:par
 
 PARAMETROIN::=  EXP:exp 
                 {:
-                    Nodo aux = new Nodo("PARAMETROIN");
+                    //Nodo aux = new Nodo("PARAMETROIN");
                     exp.columna=expleft+1;
                     exp.linea=expright+1;
-                    aux.add(exp);
-                    RESULT = aux;
+                    //aux.add(exp);
+                    RESULT =exp;
                 :}
                 ;
 

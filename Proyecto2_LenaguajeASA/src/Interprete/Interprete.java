@@ -6,10 +6,14 @@
 package Interprete;
 
 import Analizadores.Nodo;
+import Reportes.*;
 import Acciones.*;
 import Analizadores.Lexico;
 import Analizadores.Sintactico;
+import GUI.GestionArchivo;
 import GUI.PanelPrincipal;
+import java.awt.Image;
+import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -18,6 +22,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -25,6 +30,7 @@ import java.util.logging.Logger;
  */
 public class Interprete {
 
+    
     LinkedList<Metodo>lista_metodos;
     LinkedList<HashMap<String,Variable>>ambitos;
     HashMap<String, Variable> actual;
@@ -38,6 +44,7 @@ public class Interprete {
     
     LinkedList<String>imports = new LinkedList<>();
     public StringBuilder consola = new StringBuilder();
+    public StringBuilder ts = new StringBuilder();
     
     public Interprete()
     {
@@ -191,16 +198,22 @@ public class Interprete {
             case "ROMPER":
                 romper = true;
                 break;
-
             case "CONTINUAR":
                 continuar = true;
                 break;
-                
             case "PARA":
                 ejecutar_for(raiz);
                 break;
             case "CAMBIAR_A":
                 ejecutar_switch(raiz);
+                break;
+            case "DIBUJAR_EXP":
+                dibujarExp(raiz);
+                    break;
+            case "DIBUJAR_TS":
+                dibujarTS();
+            case "DIBUJAR_AST":
+                dibujarAST();
                 break;
                 
         }
@@ -963,7 +976,7 @@ public class Interprete {
     }
 
     private void ejecutar_switch(Nodo raiz) {
-        System.out.println("j");
+        //System.out.println("j");
         
         Object res = evaluar_expresion(raiz.hijos.get(0));
         if(res!=null && (int)res!=-3092){
@@ -1012,7 +1025,16 @@ public class Interprete {
     private void recorrer_imports() {
         for (String ruta : imports) {
             
-            String contenido = get_contenido(ruta);
+            File file=new File(ruta);
+            if(!file.isFile()&&!file.canRead())
+            {
+                ErrorT error=new ErrorT(ruta, "Semantico", "No existe el archivo");
+                LSemanticos.add(error);
+                return;
+            }
+            
+            
+            String contenido = get_contenido(file);
             try {
                 LinkedList<Interprete_import> objetos = new LinkedList<Interprete_import>();
                 Reader reader = new StringReader(contenido);
@@ -1047,9 +1069,47 @@ public class Interprete {
         }
     }
 
-    private String get_contenido(String ruta) {
+    private String get_contenido(File archivo) {
      
-        return "";
+        GestionArchivo gestion= new GestionArchivo();
+        String contenido=gestion.AbrirATexto(archivo);
+        return contenido;
+    }
+
+    private void dibujarExp(Nodo raiz) {
+        GraficadorEXP exp=new GraficadorEXP();
+        exp.graficarAST(raiz.hijos.get(0));
+        
+        String ruta_png="/home/johnnybravo/SalidasDot_Pro2/exp.png";
+        
+        //ImageIcon imagenext= new ImageIcon().getIm;
+        //PanelPrincipal.panelAST
+        //PanelPrincipal.PanelEXP.setIcon(new ImageIcon(ruta_png));
+        rsscalelabel.RSScaleLabel.setScaleLabel(PanelPrincipal.PanelEXP, ruta_png);
+    }
+
+    private void dibujarTS() {
+        
+        ReporteTS repts=new ReporteTS();
+        for (Map.Entry<String, Variable> entry : actual.entrySet()) {
+                    Variable var = entry.getValue();
+                    ts.append("\t\t\t<tr>");
+                    ts.append("\t\t\t<tr>");
+                    ts.append("\t\t\t\t<td>\t"+var.nombre+"\t</td>");
+                    ts.append("\t\t\t\t<td>\t"+var.tipo+"\t</td>");
+                    ts.append("\t\t\t\t<td>\t"+var.valor+"\t</td>");
+                    ts.append("\t\t\t</tr>");
+                    
+                }
+        repts.generarReporteTS(ts.toString());
+        ts.setLength(0);
+        Varios var=new Varios();
+        var.autoAbrir("/home/johnnybravo/SalidasDot_Pro2/TS.html");
+        
+    }
+
+    private void dibujarAST() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
