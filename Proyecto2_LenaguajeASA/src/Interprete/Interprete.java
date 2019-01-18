@@ -7,6 +7,7 @@ package Interprete;
 
 import Analizadores.Nodo;
 import Acciones.*;
+import GUI.PanelPrincipal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -24,12 +25,16 @@ public class Interprete {
     Nodo principal;
     int num=0;
     public ArrayList<ErrorT> LSemanticos;
-   
+    Object retorno =null;
+    boolean flag_retorno=false;
+    public Interprete()
+    {
+        
+    }
     
     
-    
-    public Interprete(Nodo raiz, ArrayList<ErrorT> lista) {
-        this.LSemanticos=lista;
+    public void Interprete(Nodo raiz) {
+        //this.LSemanticos=lista;
         this.lista_metodos = new LinkedList<>();
         this.ambitos = new LinkedList<>();
         aumentar_ambito();
@@ -80,78 +85,42 @@ public class Interprete {
                 break;
         }
     }
-    
-//    private void guardar_funcion(Nodo raiz) {
-//        String nombre = raiz.hijos.get(1).valor;
-//        String tipo = raiz.hijos.get(0).valor;
-//        String nombre_aux=nombre;
-//        
-//        Metodo nuevo = new Metodo();
-//        
-//        if (raiz.hijos.size() == 3) {//no trae parametros
-//            nuevo.sentencias = raiz.hijos.get(2);
-//            
-//        } else {
-//            for (Nodo a : raiz.hijos.get(2).hijos) {
-//                nombre_aux += "_" + a.hijos.get(0).valor;
-//
-//            }
-//            nuevo.Parametros=raiz.hijos.get(2);
-//            nuevo.sentencias = raiz.hijos.get(3);
-//        }
-//        
-//        nuevo.nombre_aux=nombre_aux;
-//        nuevo.nombre=nombre_aux;
-//        nuevo.tipo = tipo;
-//        
-//        //comparamos
-//        boolean flag = true;
-//        for(Metodo m:lista_metodos){
-//            if(m.nombre.toUpperCase().equals(nombre_aux.toUpperCase())){
-//                //activar bandera erro ya existe Metodo
-//                ErrorT error=new ErrorT(nombre_aux, "Semantico", "Ya existe un metodo con este nombre");
-//                comp.lista_errores.add(error);
-//                flag=false;
-//                break;
-//            }
-//        }
-//        
-//        if(flag){
-//            lista_metodos.add(nuevo);
-//        }
-//    }
 
-    
     private void guardar_metodo(Nodo raiz) {
-        String nombre = raiz.hijos.get(0).valor;
+        String nombre = raiz.hijos.get(1).valor;
+        String tipo = raiz.hijos.get(0).valor;
         String nombre_aux=nombre;
+        
         Metodo nuevo = new Metodo();
         
-        if (raiz.hijos.size() == 2) {//no trae parametros
-            nuevo.sentencias = raiz.hijos.get(1);
+        if (raiz.hijos.size() == 3) {//no trae parametros
+            nuevo.sentencias = raiz.hijos.get(2);
             
         } else {
-            for (Nodo a : raiz.hijos.get(1).hijos) {
+            for (Nodo a : raiz.hijos.get(2).hijos) {
                 nombre_aux += "_" + a.hijos.get(0).valor;
 
             }
-            nuevo.Parametros=raiz.hijos.get(1);
-            nuevo.sentencias = raiz.hijos.get(2);
+            nuevo.Parametros=raiz.hijos.get(2);
+            nuevo.sentencias = raiz.hijos.get(3);
         }
         
         nuevo.nombre_aux=nombre_aux;
         nuevo.nombre=nombre_aux;
-        nuevo.tipo = "VACIO";
+        nuevo.tipo = tipo;
         
         //comparamos
         boolean flag = true;
         for(Metodo m:lista_metodos){
             if(m.nombre.toUpperCase().equals(nombre_aux.toUpperCase())){
-                //activar bandera erro ya existe metodo
+                //activar bandera erro ya existe Metodo
+                ErrorT error=new ErrorT(nombre_aux, raiz.hijos.get(0).linea, raiz.hijos.get(0).columna, "Semantico", "Ya existe un metodo/funcion con ese nombre y parametros");
+                LSemanticos.add(error);
                 flag=false;
                 break;
             }
         }
+        
         
         if(flag){
             lista_metodos.add(nuevo);
@@ -197,31 +166,33 @@ public class Interprete {
 
     private void ejecutar_declaracion(Nodo raiz) {
         String tipo = raiz.hijos.get(0).valor;
-        //Object res = null;//evaluar_expresion(raiz.hijos.get(2));
         Object res=evaluar_expresion(raiz.hijos.get(2));
         
         String tipo_var = retornar_tipo_nombre(res);
         
         if("-3092".equals(tipo_var)||(!"Texto".equals(tipo)&&"Texto".equals(tipo_var))){
             //error
+            ErrorT error=new ErrorT(tipo_var, raiz.hijos.get(2).linea, raiz.hijos.get(2).columna, "Semantico","Imcompatibilidad de tipos");
+            LSemanticos.add(error);
             return;
         }
         
         for(Nodo a:raiz.hijos.get(1).hijos){
-            guardar_variable(tipo,a.valor,res);
+            guardar_variable(tipo,a.valor,res, a.linea, a.columna);
         }
 
         }
     
       private void ejecutar_asignacion(Nodo raiz) {
         String id = raiz.hijos.get(0).valor;
-       // Object res = null;//evaluar_expresion(raiz.hijos.get(1));
         Object res=evaluar_expresion(raiz.hijos.get(1));
         Variable aux = get_variable(id);
         
         String tipo_var = retornar_tipo_nombre(res);
         if("-3092".equals(tipo_var)||(!"Texto".equals(aux.tipo)&&"Texto".equals(tipo_var))){
             //error
+            ErrorT error=new ErrorT(tipo_var, raiz.hijos.get(1).linea, raiz.hijos.get(1).columna, "Semantico", "Incompatibilidad de tipos");
+            LSemanticos.add(error);
             return;
         }
         
@@ -280,11 +251,13 @@ public class Interprete {
         }
     }
 
-    private void guardar_variable(String tipo,String valor, Object res) {
+    private void guardar_variable(String tipo,String valor, Object res, int line, int col) {
         if(!actual.containsKey(valor)){
             this.actual.put(valor, new Variable(tipo,valor,res));
         }else{
             //error ya existe variable en el ambito actual
+            ErrorT error=new ErrorT(valor, line, col, "Semantico", "Ya existe un una variable  con ese nombre en el ambito actual");
+            LSemanticos.add(error);
         }
     }
 
@@ -300,7 +273,7 @@ public class Interprete {
 
     private Object evaluar_expresion(Nodo raiz) {
         
-        switch(raiz.hijos.size())
+            switch(raiz.hijos.size())
         {
             case 3:
                 switch(raiz.hijos.get(1).valor)
@@ -324,6 +297,10 @@ public class Interprete {
             case 2:
                 if(raiz.hijos.get(0).valor.compareToIgnoreCase("-")==0)
                 return (int)evaluar_expresion(raiz.hijos.get(1))*-1;
+                
+                else if(raiz.valor.equals("LLAMAR")){
+                    return evaluar_llamada(raiz);
+                }
             case 1:
                 switch (raiz.valor)
                 {
@@ -334,7 +311,9 @@ public class Interprete {
                     case "TOKVERDADERO":
                         return 1;
                     case "TOKFALSO":
-                        return 0;  
+                        return 0;
+                    case "TOKSTRING":
+                        return evaluar_expresion(raiz.hijos.get(0));
                     case "ID":
                         return evaluar_id(raiz);
                     default:
@@ -386,6 +365,10 @@ public class Interprete {
         
         if(tipo1==-1 && tipo2==-1){
             //error evaluacion dio null
+            ErrorT error=new ErrorT(izq.toString(), izq.linea, izq.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error);
+            ErrorT error1=new ErrorT(der.toString(), der.linea, der.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error1);
             
             return -3092;
         }
@@ -408,11 +391,19 @@ public class Interprete {
         
         if(tipo1==-1 || tipo2==-1){
             //error evaluacion dio null
+            ErrorT error=new ErrorT(izq.toString(), izq.linea, izq.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error);
+            ErrorT error1=new ErrorT(der.toString(), der.linea, der.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error1);
             return -3092;
         }
         
         if(tipo1==1|| tipo2==1){
             //agregas a error no se pueden restar stirngs
+            ErrorT error=new ErrorT(val1.toString(), izq.linea, izq.columna, "Semantico", "No se puede restar variables de tipo Texto");
+            LSemanticos.add(error);
+            ErrorT error1=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede restar variables de tipo Texto");
+            LSemanticos.add(error1);
             return -3092;
         }else{
             return Double.parseDouble(val1.toString())- Double.parseDouble(val2.toString());
@@ -428,11 +419,19 @@ public class Interprete {
         
         if(tipo1==-1 || tipo2==-1){
             //error evaluacion dio null
+            ErrorT error=new ErrorT(izq.toString(), izq.linea, izq.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error);
+            ErrorT error1=new ErrorT(der.toString(), der.linea, der.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error1);
             return -3092;
         }
         
         if(tipo1==1|| tipo2==1){
-            //agregas a error no se pueden restar stirngs
+            //agregas a error no se pueden multiplicar stirngs
+            ErrorT error=new ErrorT(val1.toString(), izq.linea, izq.columna, "Semantico", "No se puede multiplicar variables de tipo Texto");
+            LSemanticos.add(error);
+            ErrorT error1=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede multiplicar variables de tipo Texto");
+            LSemanticos.add(error1);
             return -3092;
         }else{
             return Double.parseDouble(val1.toString())* Double.parseDouble(val2.toString());
@@ -448,15 +447,34 @@ public class Interprete {
         
         if(tipo1==-1 || tipo2==-1){
             //error evaluacion dio null
+            ErrorT error=new ErrorT(izq.toString(), izq.linea, izq.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error);
+            ErrorT error1=new ErrorT(der.toString(), der.linea, der.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error1);
             return -3092;
         }
         
         if(tipo1==1|| tipo2==1){
-            //agregas a error no se pueden restar stirngs
+            //agregas a error no se pueden dividir stirngs
+            ErrorT error=new ErrorT(val1.toString(), izq.linea, izq.columna, "Semantico", "No se puede dividir variables de tipo Texto");
+            LSemanticos.add(error);
+            ErrorT error1=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir variables de tipo Texto");
+            LSemanticos.add(error1);
             return -3092;
         }else{
-            return Double.parseDouble(val1.toString())/Double.parseDouble(val2.toString());
+            if(Double.parseDouble(val2.toString())==0)
+            {
+                //Error no se puede dividir sobre 0
+                ErrorT error1=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                LSemanticos.add(error1);
+                return-3092;
+            }else
+            {
+                return Double.parseDouble(val1.toString())/Double.parseDouble(val2.toString());
+            }
+            
         }
+        //return -3092;
     }
 
     private Object evaluar_Modulo(Nodo izq, Nodo der) {
@@ -467,15 +485,32 @@ public class Interprete {
         int tipo2 = retornar_tipo(val2);
         
         if(tipo1==-1 || tipo2==-1){
+            ErrorT error=new ErrorT(izq.toString(), izq.linea, izq.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error);
+            ErrorT error1=new ErrorT(der.toString(), der.linea, der.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error1);
             //error evaluacion dio null
             return -3092;
         }
         
         if(tipo1==1|| tipo2==1){
-            //agregas a error no se pueden restar stirngs
+            //agregas a error no se pueden dividir stirngs
+            ErrorT error=new ErrorT(val1.toString(), izq.linea, izq.columna, "Semantico", "No se puede dividir variables de tipo Texto");
+            LSemanticos.add(error);
+            ErrorT error1=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir variables de tipo Texto");
+            LSemanticos.add(error1);
             return -3092;
         }else{
-            return Double.parseDouble(val1.toString())% Double.parseDouble(val2.toString());
+            if(Double.parseDouble(val2.toString())==0)
+            {
+                //Error no se puede dividir sobre 0
+                ErrorT error1=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede dividir sobre 0");
+                LSemanticos.add(error1);
+                return-3092;
+            }else
+            {
+                return Double.parseDouble(val1.toString())% Double.parseDouble(val2.toString());
+            }
         }
     }
 
@@ -653,8 +688,10 @@ public class Interprete {
             //error no se peude imprimir
             return;
         }
-        
         System.out.println(res.toString());
+        GUI.PanelPrincipal panel=new PanelPrincipal();
+        panel.imprimirConsola(res.toString());
+        
         
     }
 
@@ -697,6 +734,72 @@ public class Interprete {
             //garegar a error no existe variable
             return -3092;
         }
+    }
+
+    private Object evaluar_llamada(Nodo raiz) {
+        Metodo aux= null;
+        if(raiz.hijos.size()==2){
+            String nombre = raiz.hijos.get(0).valor.toUpperCase();
+            LinkedList<Object> lista = new LinkedList<>();
+            for(Nodo a: raiz.hijos.get(1).hijos){
+                Object res = evaluar_expresion(a);
+                if(res!=null){
+                    lista.addLast(res);
+                    nombre+="_"+retornar_tipo_nombre(res).toUpperCase();
+                }else{
+                    //ocurio un error al evaluar el metodo....
+                    return null;
+                }
+            }
+            
+            aux= get_metodo(nombre);
+            if(aux!=null){
+                 return ejecutar_metodo(aux, lista, raiz);
+            }else{
+                //no existe metodo
+                return null;
+            }
+        }else{
+            aux = get_metodo(raiz.hijos.get(0).valor);
+            if (aux != null) {
+                return ejecutar_metodo(aux, null, raiz);
+            } else {
+                //no existe metodo
+                return null;
+            }
+        }
+    }
+
+    private Metodo get_metodo(String nombre) {
+        for(Metodo a:lista_metodos){
+            if(a.nombre.toUpperCase().equals(nombre))
+                return a;
+        }
+        return null;
+    }
+
+    private Object ejecutar_metodo(Metodo aux, LinkedList<Object> lista, Nodo raiz) {
+        retorno = null;
+        flag_retorno = false;
+        aumentar_ambito();
+        
+        if(lista!=null){
+            for (int i = 0; i < lista.size(); i++) {
+               String nombre_var = aux.Parametros.hijos.get(i).hijos.get(1).valor;
+               String tipo_var = aux.Parametros.hijos.get(i).hijos.get(0).valor;
+               Object val = lista.get(i);
+               guardar_variable(tipo_var, nombre_var, val, raiz.linea, raiz.columna);
+           }
+        }
+        
+        for(Nodo a: aux.sentencias.hijos){
+            if(!flag_retorno){
+                ejecutar(raiz);
+            }
+        }
+        
+        disminuir_ambito();
+        return retorno;
     }
 }
 

@@ -287,6 +287,11 @@ public class PanelPrincipal extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "NO HAY ERRORES");
         }
     }
+    public void imprimirConsola(String entrada)
+    {
+        String aux=txtConsola.getText();
+        this.txtConsola.setText(aux+"\n"+entrada);
+    }
     
     /**
      * Metodo principal

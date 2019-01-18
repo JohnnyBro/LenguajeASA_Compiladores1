@@ -25,6 +25,9 @@ public class Compilador
         Reader reader = new StringReader(entrada);
         Lexico analizador_lexico =  new Lexico(reader);
         Sintactico analizador_sintactico = new Sintactico(analizador_lexico);
+        Interprete inter = new Interprete();
+        
+        
         
         
         /*Actualizando listas
@@ -36,6 +39,7 @@ public class Compilador
         
         analizador_lexico.lista_errores = d.lista_errores;
         analizador_sintactico.lista_errores = d.lista_errores;
+        inter.LSemanticos=d.lista_errores;
         //lista_errores=d.lista_errores;
         
       
@@ -44,10 +48,10 @@ public class Compilador
         {
             analizador_sintactico.parse();
             d.raiz = analizador_sintactico.raiz;
+            inter.Interprete(d.raiz);
             
-            Interprete inter = new Interprete(d.raiz,d.lista_errores);
-            //Graficador g= new Graficador();
-            //g.graficarAST(d.raiz);
+            Graficador g= new Graficador();
+            g.graficarAST(d.raiz);
            
         }
         catch (Exception ex)
