@@ -50,6 +50,11 @@ public class Compilador
             d.raiz = analizador_sintactico.raiz;
             inter.Interprete(d.raiz);
             
+            
+            //
+            
+            PanelPrincipal.txtConsola.setText(inter.consola.toString());
+            
             Graficador g= new Graficador();
             g.graficarAST(d.raiz);
            

@@ -7,27 +7,20 @@ package Interprete;
 
 import Analizadores.Nodo;
 import Acciones.*;
-import Analizadores.Lexico;
-import Analizadores.Sintactico;
 import GUI.PanelPrincipal;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author johnnybravo
  */
-public class Interprete {
+public class Interprete_import {
 
-    LinkedList<Metodo>lista_metodos;
+    public LinkedList<Metodo>lista_metodos;
     LinkedList<HashMap<String,Variable>>ambitos;
-    HashMap<String, Variable> actual;
+    public HashMap<String, Variable> actual;
     Nodo principal;
     int num=0;
     public ArrayList<ErrorT> LSemanticos;
@@ -36,23 +29,24 @@ public class Interprete {
     boolean romper = false;
     boolean continuar = false;
     
-    LinkedList<String>imports = new LinkedList<>();
-    public StringBuilder consola = new StringBuilder();
     
-    public Interprete()
+    public Interprete_import()
     {
         
     }
+
+    Interprete_import(Nodo raiz) {
+         this.lista_metodos = new LinkedList<>();
+         this.ambitos = new LinkedList<>();
+         aumentar_ambito();
+         analizar(raiz);
+    }
     
     
-    public void Interprete(Nodo raiz) {
+    public void Interprete_import(Nodo raiz) {
         //this.LSemanticos=lista;
-        this.lista_metodos = new LinkedList<>();
-        this.ambitos = new LinkedList<>();
-        aumentar_ambito();
-        analizar(raiz);
-        recorrer_imports();
-        ejecutar(principal);
+       
+        //ejecutar(principal);
     }
     
     void aumentar_ambito(){
@@ -75,9 +69,9 @@ public class Interprete {
                     analizar(a);
                 }
                 break;
-            case "IMPORTAR":
-                imports.add("nombre del archivo");
-                break;
+           /* case "ENCABEZADOS":
+                
+                break;*/
             case "SENTS":
                 for(Nodo a: raiz.hijos){
                      
@@ -794,7 +788,8 @@ public class Interprete {
             return;
         }
         System.out.println(res.toString());
-        consola.append(res.toString()+"\n");
+        GUI.PanelPrincipal panel=new PanelPrincipal();
+        panel.imprimirConsola(res.toString());
         
         
     }
@@ -1007,49 +1002,6 @@ public class Interprete {
                 }
             }
         }
-    }
-
-    private void recorrer_imports() {
-        for (String ruta : imports) {
-            
-            String contenido = get_contenido(ruta);
-            try {
-                LinkedList<Interprete_import> objetos = new LinkedList<Interprete_import>();
-                Reader reader = new StringReader(contenido);
-                Lexico analizador_lexico = new Lexico(reader);
-                Sintactico analizador_sintactico = new Sintactico(analizador_lexico);
-
-                analizador_sintactico.parse();
-                Interprete_import inter = new Interprete_import(analizador_sintactico.raiz);
-
-                for (Map.Entry<String, Variable> entry : inter.actual.entrySet()) {
-                    Variable var = entry.getValue();
-                    guardar_variable(var.tipo, var.nombre, var.valor, 1, 1);
-                }
-
-                for (Metodo a : inter.lista_metodos) {
-                    boolean flag = true;
-                    for (Metodo aux : lista_metodos) {
-                        if (aux.nombre_aux.equals(a.nombre_aux)) {
-                            flag = false;
-                            break;
-                        }
-                    }
-                    if (flag) {
-                        lista_metodos.addLast(a);
-                    }
-                }
-                // do what you have to do here
-                // In your case, another loop.
-            } catch (Exception ex) {
-                Logger.getLogger(Interprete.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-    private String get_contenido(String ruta) {
-     
-        return "";
     }
 
 }

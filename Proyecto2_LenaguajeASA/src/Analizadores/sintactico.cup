@@ -202,7 +202,7 @@ SENTS::=        SENTS:sents SENT:sent
                 ;
 
 //SENTENCIAS GENERALES**************
-SENT::=         DECLARACION:dec tokPcoma        {: RESULT = dec; :}
+SENT::=           DECLARACION:dec tokPcoma        {: RESULT = dec; :}
                 | ASIGNACION:asig tokPcoma      {: RESULT = asig; :}
                 | PRINCIPAL:princi              {: RESULT = princi; :}
                 | METODO:metodo                 {: RESULT = metodo; :}
@@ -865,7 +865,7 @@ MVALORES::=      MVALORES:valores MVALOR:valor
                 :}
                 ;
 
-MVALOR::=        tokValor TIPODATO:tipo tokDosp MSENTS:sents
+MVALOR::=        tokValor EXP:tipo tokDosp MSENTS:sents
                 {:
                     Nodo aux = new Nodo("VALOR");
                     tipo.columna=tipoleft+1;
