@@ -1,0 +1,148 @@
+<////////////////////////////////////////////////////////////
+Curso: Lenguajes y Compiladores 1
+Seccion: N
+Escuela: Escuela de Vacaciones
+Año: 2018
+Fecha de Calificación: 18 de enero de 2019
+////////////////////////////////////////////////////////////>
+
+importar fun1.asa;
+
+
+Entero g_entero = 15;
+Decimal G_decimal = 0.0;
+Booleano g_bool = Falso;
+Texto G_texto = "Nuevo Mundo";
+Entero numero = 0;
+
+
+vacio principal(){
+	Mostrar("F1: Distinción de variables g de l -> "+numero);
+	funcionalidad_1();
+	funcionalidad_2();
+	funcionalidad_3();
+	funcionalidad_4();
+	funcionalidad_5();
+	DibujarAST(funcionalidad_4);
+	DibujarEXP(5/2+4-(10^0)+(45%2)+10*2/4-45);
+	DibujarEXP(-5*-5+sumar(2,2));
+	Mostrar("Su nota final es aproximadamente -> "+Sumar(60,1));
+}
+
+Vacio funcionalidad_1(){
+	Entero numero=15;
+	Mostrar("=================== Resultados FUNCIONALIDAD 1 ===================");
+	Entero l_entero;
+	Decimal l_decimal;
+	l_entero = 255%10 + 25 -(50/2 + (5^5)) + (-10*50)-00000.00000;
+	l_decimal = 275%10 - (-5) + ( 4*2*1*)^0 + 25.0/2.0;
+
+	Booleano mayor = 55.51 > 55.52; 
+	Booleano menor = 25.01 < 25.0001 ;
+	Booleano ma_igual = 49 >= 50 ;  
+	Booleano me_igual = 26.000 <= 25.00 ;
+	Booleano igual =  17.002 == 17.0002;
+	Booleano difer =  14.004 != 14.004;
+
+	Booleano val_or =  mayor || verdadero || falso;
+	Booleano val_and = (me_igual && igual) && (verdadero && verdadero);
+	Booleano val_not = !(!(difer)) && !(g_bool);
+	Mostrar("F1: aritmetica 1 -> "+l_entero+ " Uso de g and l -> "+(g_entero + l_entero));
+	Mostrar("F1: aritmetica 2 -> "+l_decimal+ " Uso de g and l -> "+(g_decimal + l_decimal));
+	Mostrar("F1: Distinción de variables l de g -> "+numero);
+	Mostrar("F1: logica OR -> "+val_or);
+	Mostrar("F1: logica AND -> "+val_and);
+	Mostrar("F1: logica NOT -> "+val_not);
+
+	Mostrar("F1: relacional mayor -> "+mayor);
+	Mostrar("F1: relacional menor -> "+menor);
+	Mostrar("F1: relacional ma_igual -> "+ma_igual);
+	Mostrar("F1: relacional me_igual -> "+me_igual);
+	Mostrar("F1: relacional igual -> "+igual);
+	Mostrar("F1: relacional diferente -> "+difer);
+	DibujarTS();
+}
+
+
+vacio funcionalidad_2(){
+	Mostrar("=================== Resultados FUNCIONALIDAD 2 ===================");
+	Texto cad1 = retornaCad1();
+	Texto cad2 = retornaCad2();
+	Texto tmp1 = cad1+"1";
+	Texto tmp2 = cad2+"2";
+	Booleano val_cad1 = tmp2 > tmp1 ;
+	Booleano val_cad2 = cad1 < tmp1;
+	tmp1 = cad1 + "2";
+	Booleano val_cad3 = tmp1 == tmp2;
+	Booleano val_cad4 = "MenorES " != "MenorEs";
+	Entero numero = 45.5 + 55.5 + verdadero ;
+	Decimal numero2 = 25*2+(10.2-4);
+	Mostrar("F2: Validacion de cadenas 1 -> "+val_cad1);
+	Mostrar("F2: Validacion de cadenas 2 -> "+val_cad2);
+	Mostrar("F2: Validacion de cadenas 3 -> "+val_cad3);
+	Mostrar("F2: Validacion de cadenas 4 -> "+val_cad4);
+	Mostrar("F2: Validacion de casteos 1 -> "+numero);
+	Mostrar("F2: Validacion de casteos 2 -> "+numero2);
+}
+
+
+vacio Funcionalidad_3(){
+	Mostrar("=================== Resultados FUNCIONALIDAD 3 ===================");
+	metodoSin();	
+	metodoCon("Mi Nota es",100.00);
+	Mostrar(funcionSin());
+	Mostrar(funcionCon(25,verdadero));
+	Mostrar("Resultados Sobrecarga de metodos");
+	metodoCon("Mi Nota es",100.00,50);
+	Mostrar(funcionCon(25,verdadero,50));
+}
+
+vacio metodoSin(){
+	Mostrar("Llamada a metodo sin parametros :) ");
+	retorno;
+	Mostrar("Esto no lo debio mostrar, el retorno en metodos no sirve :( ");
+}
+
+vacio metodoCon(Texto txt, Decimal dec){
+	Mostrar("Llamada a metodo con parametros :) ");
+	Mostrar("Envio -> "+txt);
+	Mostrar("Envio -> "+dec);
+	retorno;
+	Mostrar("Esto no lo debio mostrar, el retorno en metodos no sirve :( ");
+}
+
+vacio metodoCon(Texto txt, Decimal dec, Entero num ){
+	Mostrar("Llamada a metodo sobrecargado");
+	Mostrar("Operacion 1 -> "+(num+dec));
+	Mostrar("Operacion 2 -> "+(dec-num));
+}
+
+Texto funcionSin(){	
+	retorno "LLamada a funcion son parametros :) ";
+	Mostrar("Esto no lo debio mostrar, el retorno en funciones no sirve :( ");
+}
+
+Texto funcionCon(Entero val,  booleano bol){
+	Mostrar("Envio el parametro -> "+val);
+	Mostrar("Envio el parametro -> "+bol);
+	retorno "LLamada a funcion con parametros :) ";
+	Mostrar("Esto no lo debio mostrar, el retorno en funciones no sirve :( ");
+}
+
+Texto funcionCon(Entero val,  booleano bol, Entero val2 ){
+	Mostrar("Operacion f1 -> "+(val1 + val2));
+	Mostrar("Operacion f2 -> "+(val2 - val1));
+	retorno "LLamada a funcion sobrecargada";
+}
+
+Entero sumar(Entero a, Entero b){
+	Es_verdadero(a+b > 10 ){
+		Entero c;
+		Entero d=20;
+		Decimal dec = 100.0;
+		Booleano ganar = falso;
+		Texto suerte = "Si, esto funciona :)";
+		DibujarTS();
+	}
+	retorno a+b;
+}

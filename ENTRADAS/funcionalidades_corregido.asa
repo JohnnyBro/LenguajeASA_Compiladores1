@@ -1,0 +1,51 @@
+importar C:\Users\Emely\Desktop\funcionalidades2.asa;
+
+Entero g_entero = 15;
+Decimal g_decimal = 0.0;
+Booleano g_bool = falso;
+Texto g_texto = "Nuevo Mundo";
+Entero numero = 0;
+
+Vacio Principal()
+{
+	Mostrar("F1: Distinci�n de variables g de l -> "+numero);
+	funcionalidad_1();
+	funcionalidad_2();
+	funcionalidad_3();
+	   funcionalidad_4();
+    	funcionalidad_5();
+}
+
+Vacio funcionalidad_1(){
+	Entero numero=15;
+	Mostrar("=================== Resultados FUNCIONALIDAD 1 ===================");
+	Entero l_entero;
+	Decimal l_decimal;
+	l_entero = 255%10 + 25 -(50/2 + (5^5)) + (-10*50)-00000.00000;
+	l_decimal = 275%10 - (-5) + (4*2*1)^0 + 25.0/2.0;
+
+	Booleano mayor = 55.51 > 55.52; 
+	Booleano menor = 25.01 < 25.0001 ;
+	Booleano ma_igual = 49 >= 50 ;  
+	Booleano me_igual = 26.000 <= 25.00 ;
+	Booleano igual =  17.002 == 17.0002;
+	Booleano difer =  14.004 != 14.004;
+
+	Booleano val_or =  mayor || verdadero || falso;
+	Booleano val_and = (me_igual && igual) && (verdadero && verdadero);
+	Booleano val_not = !(!(difer)) && !(g_bool);
+	Mostrar("F1: aritmetica 1 -> "+l_entero+ " Uso de g and l -> "+(g_entero + l_entero));
+	Mostrar("F1: aritmetica 2 -> "+l_decimal+ " Uso de g and l -> "+(g_decimal + l_decimal));
+	Mostrar("F1: Distinci�n de variables l de g -> "+numero);
+	Mostrar("F1: logica OR -> "+val_or);
+	Mostrar("F1: logica AND -> "+val_and);
+	Mostrar("F1: logica NOT -> "+val_not);
+
+
+	Mostrar("F1: relacional mayor -> "+mayor);
+	Mostrar("F1: relacional menor -> "+menor);
+	Mostrar("F1: relacional ma_igual -> "+ma_igual);
+	Mostrar("F1: relacional me_igual -> "+me_igual);
+	Mostrar("F1: relacional igual -> "+igual);
+	Mostrar("F1: relacional diferente -> "+difer);
+}

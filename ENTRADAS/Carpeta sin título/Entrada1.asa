@@ -1,6 +1,6 @@
-Importar aritmeticas.asa ;
-Importar relacionales.asa ;
-Definir "/home/user1/pictures/reportes";
+Importar Entrada2.asa ;
+Importar Entrada3.asa ;
+Definir "/home/johnnybravo/SalidasDot_Pro2";
 
 Vacio Principal(){
     es_verdadero(a<=1)
@@ -44,13 +44,13 @@ Texto Saludame(){
 
 Vacio Metodo1(){
     a=16;
-    Pintar("entrada", 16,20,16.5,"caracter").dibujo().hola("hola").num("16");
+   
     Retorno;
 }
 
 Vacio Metodo1(entero num, texto bandera){
     a=16;
-    Pintar("entrada", 16,20,16.5,"caracter").dibujo().hola("hola").num("16");
+    
     Retorno;
     
     Cambiar_A ( num * 2 ) {
@@ -86,7 +86,7 @@ Vacio Metodo1(entero num, texto bandera){
     
     }
     
-    Pintar("entrada", 16,20,16.5,"caracter").dibujo().hola("hola").num("16");
+   
     DibujarEXP( 45*2+"hola" );
     DibujarTS();
     DibujarAST( factorial );

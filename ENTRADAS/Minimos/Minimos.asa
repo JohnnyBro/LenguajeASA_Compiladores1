@@ -1,0 +1,143 @@
+<////////////////////////////////////////////////////////////
+Curso: Lenguajes y Compiladores 1
+Seccion: N
+Escuela: Escuela de Vacaciones
+Año: 2018
+Fecha de Calificación: 18 de enero de 2019
+////////////////////////////////////////////////////////////>
+
+-->Vamos a importar un archivo para unirlo con el actual
+
+importar min.asa;
+
+Definir "C:\Users\user\Desktop\Reportes_Pro2"
+
+--> Finalizo la sección de encabezado
+
+<////////////////////////////////////////////////////////////
+Vamos a validar las Expresiones en Variables Globales
+////////////////////////////////////////////////////////////>
+
+
+--> Aritmeticas , logicas y relacionales;
+Decimal  dec1 = 45.5 * 2.5 + (-50*2.0) + (45.2/10.0)-25.0+1.0^0+(105.0%10.0);
+Entero ent1 = -10 * (5*-5)+10+(800000000-799999999)+(100/5^2) + (499 %10);
+Booleano Bo1 = 50 == 50 ;
+Booleano Bo2 = "Hola" != "Hoal";
+Booleano Bo3 = 5.5 > 0.001;
+Booleano Bo4 = 0.0001 < 0.001;
+Booleano Bo5 = 10 * 2 >= 20 ;
+Booleano Bo6 = 50/2 <= 25 ;
+
+booleano OR = Bo1 || Bo2 || BO3 || bo4 || bo5 || FALSO ;  
+booleano AND = (Bo1 && Bo2 ) && ( Bo3 && bo4 ) && ( Bo5 || Falso);
+booleano NOT =  !( ( OR || AND ) || ( AND && AND ) || Falso );
+
+
+
+
+Vacio Principal(){
+	--> Comprobamos la dec de variables locales
+	--> Asi mo el acceso a las variables globales
+	--> Y el retorno de expresiones en funciones
+	Entero nlocal = 50 *2 +10 ;
+	Booleano blocal = Verdadero || Falso;
+	Decimal dlocal = 10.002 + a - b + c ;
+	Texto tLocal = abc + retornaTexto();
+	
+	Mostrar("=============== Validacion de Globales/EXP ARIT ==============");
+	Mostrar(" Entero Global -> "+(uno+ent1));
+	Mostrar(" Decimal Global -> "+ a + " -> "+dec1);
+	Mostrar(" Texto Global -> "+abc);
+	Mostrar("=============== Validacion de Globales/ EXP REL Y LOG ==============");
+	Mostrar( " Validacion del igual - > "+Bo1);
+	Mostrar( " Validacion del diferente - > "+Bo2);
+	Mostrar( " Validacion del Mayor Igual -> "+Bo5);
+	Mostrar( " Validacion del Menor Igual -> "+Bo6);
+	Mostrar( " Validacion del AND -> "+AND);
+	Mostrar( " Validacion del OR -> "+OR);
+	Mostrar( " Validacion del NOT -> "+NOT);
+	Mostrar("=============== Validacion de Locales / EXP ARIT, REL Y LOG ==============");
+	Mostrar(" Entero local -> " + nlocal);
+	Mostrar(" Decimal local -> " + dlocal);
+	Mostrar(" Texto local -> " + tlocal);
+	Mostrar(" Booleano local -> "+ blocal );
+	--> Validacion de casteos
+	validarCasteos();
+	--> Validacion de Sentencias
+	Sentencias1();
+	Sentencias2();
+	--> Validacion de Reportes(imagenes);
+	DibujarAST(Sentencias1);
+	Entero pot;
+	pot = 2;
+	DibujarEXP(Suma()+25*(10-verdadero-8)+(50/2)-nlocal+(5^pot)+(105%10));
+	DibujarTB();
+}
+
+
+vacio VALIDARCASTEOS(){
+	Mostrar("=============== Validacion de Casteos / EXP ARIT, REL Y LOG ==============");	
+	Entero casEnt =  5.5 + verdadero - falso;
+	Mostrar(" El casteo de entero es -> "+casent);
+	Decimal casDec = verdadero * verdadero + 50 + 25/verdadero - falso;
+	Mostrar(" El casteo de decimal es -> "+casdec);
+	Texto casText = (falso + falso) + 5.5 * 2 + 10 - 20.5 +verdadero;
+	Mostrar(" El casteo de texto es -> "+castext);
+	Booleano casbool = 1 ;
+	Mostrar(" El casteo de booleano es -> "+casbool);
+	retorno;
+	Mostrar("Esto no debio haberlo mostrado :( ");
+	retorno;
+}
+
+Texto retornaTEXTO(){
+	Texto cad1 = " Esto";
+	Texto Cad2 = " Funciona Bien -> :)";
+	retorno cad1 + cad2; 
+}
+
+Entero sentencias1(){
+	
+	Mostrar("=============== Validacion de Sentencias Es_verdadero / Es_falso y Mientras_que ==============");
+
+	Entero Bandera1 = 10.5;
+	
+	Es_verdadero( bandera_1 > (5*2-5) ){
+		Entero loc = 5*1 ; 
+		Mostrar("Sentencia Es_Verdadero Correcta -> "+(bandera_1 +loc));
+	}
+
+	Es_verdadero(falso || falso || ( Falso && falso)){
+		Mostrar("ERROR Es_falso : Entro en un lugar donde no debia :'v ")
+	}
+	Es_falso{
+		Entero bandera2 = 20;
+		Mostrar("Setencia Es_falso Correcta  -> "+bandera2);
+	}
+
+	Decimal bandera2 = 5*2 + 15;
+
+	Mientras_que( bandera2 >= 10.0 ){
+		Mostrar(" Iteracion mientras_que No. -> "+bandera2);
+		Es_verdadero(bandera2 == 15.0 ){
+			Decimal decs = 10.5-2; 
+			Mostrar("Iteracion central -> "bandera2 + decs);
+		}
+		bandera2 = bandera2 - 1;
+	}
+	retorno 1;
+}
+
+Entero Suma(){
+	Entero a = 10;
+	Entero b = 15;
+	retorno a+b;
+}
+
+
+
+
+
+
+

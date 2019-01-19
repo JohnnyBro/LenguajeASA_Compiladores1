@@ -1,0 +1,156 @@
+Texto retornaCad1(){
+	-->este metodo va en fun1
+	Texto ret = "Soy";
+	retorno ret+"algo";
+}
+
+
+Texto retornaCad2(){
+	-->este metodo va en fun2		
+	Texto ret= "Soy";
+	retorno ret+"algo";
+}
+Vacio funcionalidad_2()
+{
+	Mostrar("=================== Resultados FUNCIONALIDAD 2 ===================");
+	Texto cad1 = retornaCad1();
+	Texto cad2 = retornaCad2();
+Texto tmp1 = cad1+"1";
+	Texto tmp2 = cad2+"2";
+	Booleano val_cad1 = tmp2 > tmp1 ;
+	Booleano val_cad2 = cad1 < tmp1;
+	tmp1 = cad1 + "2";
+	Booleano val_cad3 = tmp1 == tmp2;
+	Booleano val_cad4 = "MenorES " != "MenorEs";
+	Entero numero = 45.5 + 55.5 + verdadero ;
+	Decimal numero2 = 25*2+(10.2-4);
+	Mostrar("F2: Validacion de cadenas 1 -> "+val_cad1);
+	Mostrar("F2: Validacion de cadenas 2 -> "+val_cad2);
+	Mostrar("F2: Validacion de cadenas 3 -> "+val_cad3);
+	Mostrar("F2: Validacion de cadenas 4 -> "+val_cad4);
+	Mostrar("F2: Validacion de casteos 1 -> "+numero);
+	Mostrar("F2: Validacion de casteos 2 -> "+numero2);
+
+}
+
+vacio funcionalidad_3(){
+	Mostrar("=================== Resultados FUNCIONALIDAD 3 ===================");
+	metodoSin();	
+	metodoCon("Mi Nota es",100.00);
+	Mostrar(funcionSin());
+	Mostrar(funcionCon(25,verdadero));
+	Mostrar("Resultados Sobrecarga de metodos");
+	metodoCon(100.0,"Mi Nota es",50);
+	Mostrar(funcionCon(verdadero,25,50));
+}
+
+vacio metodoSin(){
+	Mostrar("Llamada a metodo sin parametros :) ");
+	retorno;
+	Mostrar("Esto no lo debio mostrar, el retorno en metodos no sirve :( ");
+}
+
+vacio metodoCon(Texto txt, Decimal dec){
+	Mostrar("Llamada a metodo con parametros :) ");
+	Mostrar("Envio -> "+txt);
+	Mostrar("Envio -> "+dec);
+	retorno;
+	Mostrar("Esto no lo debio mostrar, el retorno en metodos no sirve :( ");
+}
+
+vacio metodoCon(Texto txt, Decimal dec, Entero num ){
+	Mostrar("Llamada a metodo sobrecargado");
+	Mostrar("Operacion 1 -> "+(num+dec));
+	Mostrar("Operacion 2 -> "+(dec-num));
+}
+
+Texto funcionSin(){	
+	retorno "LLamada a funcion son parametros :) ";
+	Mostrar("Esto no lo debio mostrar, el retorno en funciones no sirve :( ");
+}
+
+Texto funcionCon(Entero val,  booleano bol){
+	Mostrar("Envio el parametro -> "+val);
+	Mostrar("Envio el parametro -> "+bol);
+	retorno "LLamada a funcion con parametros :) ";
+	Mostrar("Esto no lo debio mostrar, el retorno en funciones no sirve :( ");
+}
+
+Texto funcionCon(Entero val1,  booleano bol, Entero val2 ){
+	Mostrar("Operacion f1 -> "+(val1 + val2));
+	Mostrar("Operacion f2 -> "+(val2 - val1));
+	retorno "LLamada a funcion sobrecargada";
+}
+
+vacio funcionalidad_5(){
+	Mostrar("=================== Resultados FUNCIONALIDAD 5 ===================");	
+	Mostrar("El facotorial de 10 es -> "+factorial(10));
+	Mostrar("El fibonacci  de 10 es -> "+fibonacci(10));
+}
+
+Entero factorial(Entero val){
+    Es_verdadero(val<=0){
+        Retorno 1;
+    }Es_falso{
+        Retorno val*factorial(val-1);
+    }
+}
+ 
+
+Entero fibonacci(Entero n){
+    Es_verdadero((n==0)||(n==1)){
+        Retorno 1;
+    }Es_falso{
+        Retorno fibonacci(n-1)+fibonacci(n-2);
+    }
+}
+
+vacio Funcionalidad_4(){
+Mostrar("=================== Resultados FUNCIONALIDAD 4 ===================");
+Es_verdadero(verdadero && !(falso)){
+	Mostrar("F4: Entro en el Es_verdadero, bien 1");
+	Entero numero = 20;
+mientras_que(numero > 0 && verdadero ){	
+	Hasta_que(numero < 10 ){
+		Para(Entero a = 1 ; a<6 ; ++){
+			Cambiar_a(a){
+				valor 1:
+					Mostrar("Entro en caso 1 con a -> "+a+" y numero -> " +numero);
+					romper;
+				valor 2:
+					Mostrar("Entro en caso 2 con a -> "+a+" y numero -> " +numero);
+					romper;	
+				valor 3:
+							Mostrar("Entro en caso 3 con a -> "+a+" y numero -> " +numero);
+							romper;
+						valor 4:
+							Mostrar("Entro en caso 4 con a -> "+a+" y numero -> " +numero);
+							romper;
+						valor 5:
+							Mostrar("Entro en caso 5 con a -> "+a+" y numero -> " +numero);
+							romper;
+					}					
+				}
+	Mostrar("F4: Iteracion hasta_que con numero -> "+numero);
+	numero= numero - 1;			
+	continuar;
+	Mostrar("ERROR: el continuar en el hasta que no funciona :(");
+	}				
+Mostrar("F4: Iteracion mientras con numero -> "+numero);
+			Es_verdadero( numero > 0 ){
+				Mostrar("Entro en el if 1 del while -> va bien");				
+				Es_verdadero(!falso){
+					Mostrar("Entro en el if 2 del while -> va bien");
+					Es_verdadero(!falso || verdadero ){
+						Mostrar("Entro en el if 3 del while -> va bien");
+						romper;
+						Mostrar("Imprimio despues del romper -> no jalo :(");
+					}
+				}				
+			}
+}			
+			Mostrar("El romper dentro del mientras no funciona :( ");
+	}Es_falso{
+		Mostrar("F4: Esto no debio mostrarlo, mal :(");
+	}
+}

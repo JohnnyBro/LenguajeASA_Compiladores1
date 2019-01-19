@@ -1,0 +1,78 @@
+<////////////////////////////////////////////////////////////
+Curso: Lenguajes y Compiladores 1
+Seccion: N
+Escuela: Escuela de Vacaciones
+Año: 2018
+Fecha de Calificación: 18 de enero de 2019
+////////////////////////////////////////////////////////////>
+
+
+<////////////////////////////////////////////////////////////
+Vamos a validar las Expresiones en Variables Globales
+////////////////////////////////////////////////////////////>
+
+--> Asignación de valor puntual
+Decimal a, b, c = 45.5; 
+Entero uno,dos,tres = -100;
+texto abc, def, ghi = "Calificacion Compis";
+Booleano b1,b2,b3 = Falso;
+
+Decimal sentencias2(){	
+	Mostrar("=============== Validacion de Sentencias Para y Cmbiar_a   ==============");
+
+	Texto abc = "Texto temporal";
+	
+	Entero tmp = 5.0 - verdadero;
+
+	Para( Entero a =  tmp; a < 10 ; ++){
+		Entero tmp2 = 10-verdadero - VERDADERO - 8;
+		Para( Decimal b = 25 ; b > 0 ; --){
+			Es_verdadero(b%5 == 0 ){
+				tmp2 = tmp2 + 5;
+				Mostrar("tmp2 Cambio a  -> "+tmp2+ " iteracion ext -> "+a);					
+			}
+		}		
+	}
+
+	sentecias3();
+
+	retorno 1.0;
+}
+
+Booleano sentencias3(){	
+	Entero num = 10;
+	Cambiar_a(num*2+(10- 20)){
+		valor 2: 
+			Mostrar("Entro en el caso 2 : Esta mal :( ");
+			romper;
+		valor 4:
+			Mostrar("Entro en el caso 4 : Esta mal :( ");
+			Romper;
+		valor 6:
+			Mostrar("Entro en el caso 6 : Esta mal :( ");
+			Romper;
+		valor 8:
+			Mostrar("Entro en el caso 8 : Esta mal :( ");
+			Romper;
+		valor 10:
+			Mostrar("Entro en el caso 10, esta bien :)");
+		No_cumple:
+			Mostrar("Entro en no cumple, esta bien :) ");
+	}
+	Texto val = "compis";
+	Cambiar_a(val+"1"):{
+
+		valor "arquis1":
+			Mostrar("Esto no lo debe mostrar, caso arquis1 :(");
+		valor "arquis2":
+			Mostrar("Esto no lo debe mostrar, caso arquis2 :(");
+		valor "compis1":
+			Mostrar("Esto si lo debe mostrar, caso compis1 :)");
+			Romper;
+		valor "compis2":
+			Mostrar("Esto no lo debe mostrar, caso compis2 :(");
+		No_cumple: 
+		 	Mostrar("Esto no lo debe mostrar, caso defecto :(");
+	}
+	retorno verdadero;	
+}

@@ -2828,8 +2828,8 @@ class CUP$Sintactico$actions {
 		 
                     fsents.columna=fsentsleft+1;
                     fsents.linea=fsentsright+1;
-                    fsent.columna=fsentleft+1;
-                    fsent.linea=fsentright+1;
+                    //fsent.columna=fsentleft+1;
+                    //fsent.linea=fsentright+1;
                     fsents.add(fsent); RESULT = fsents; 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("FSENTS",32, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-1)), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
             }

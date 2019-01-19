@@ -1,0 +1,36 @@
+<////////////////////////////////////////////////////////////
+Curso: Lenguajes y Compiladores 1
+Seccion: N
+Escuela: Escuela de Vacaciones
+Año: 2018
+Fecha de Calificación: 18 de enero de 2019
+////////////////////////////////////////////////////////////>
+
+Texto retornaCad2(){
+	-->este metodo va en fun2		
+	Texto ret= "Soy";
+	retorno ret+"algo";
+}
+
+vacio Funcionalidad_5(){
+	Mostrar("=================== Resultados FUNCIONALIDAD 5 ===================");	
+	Mostrar("El facotorial de 10 es -> "+factorial(10));
+	Mostrar("El fibonacci  de 10 es -> "+fibonacci(10));
+}
+
+Entero factorial(Entero val){
+    Es_verdadero(val<=0){
+        Retorno 1;
+    }Es_falso{
+        Retorno val*factorial(val-1);
+    }
+}
+
+Entero fibonacci(Entero n){
+    Es_verdadero((n==0)||(n==1)){
+        Retorno 1;
+    }Es_falso{
+        Retorno fibonacci(n-1)+fibonacci(n-2);
+    }
+}
+

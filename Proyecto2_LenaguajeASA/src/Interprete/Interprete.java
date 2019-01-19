@@ -30,7 +30,8 @@ import javax.swing.ImageIcon;
  */
 public class Interprete {
 
-    
+    String rut1="/home/johnnybravo/SalidasDot_Pro2";
+    String rut="/home/johnnybravo/Documentos/Proyecto2Compi1Dic18/LenguajeASA_Compiladores1/ENTRADAS";
     LinkedList<Metodo>lista_metodos;
     LinkedList<HashMap<String,Variable>>ambitos;
     HashMap<String, Variable> actual;
@@ -83,7 +84,8 @@ public class Interprete {
                 }
                 break;
             case "IMPORTAR":
-                imports.add("nombre del archivo");
+                rut=rut+"/"+raiz.hijos.get(0).valor;
+                imports.add(rut);
                 break;
             case "SENTS":
                 for(Nodo a: raiz.hijos){
@@ -98,6 +100,8 @@ public class Interprete {
                 break;
             case "PRINCIPAL":
                 principal=raiz;
+            case "DEFINIR":
+                rut1=raiz.hijos.get(0).valor;
                 break;
             case "DECLARACION":
                 ejecutar_declaracion(raiz);
@@ -249,18 +253,24 @@ public class Interprete {
                 break;
             case "BOOLEANO":
                 if(tipo_var.equals("ENTERO")||tipo_var.equals("BOOLEANO")){
+                    //aqui truena mi proyecto =(
+                    //res=(String)res;
+                    //System.out.println(res);
+                    //if(res.getClass().getTypeName())
                     res= Integer.parseInt(String.valueOf(res));
                 }else
                     flag=false;
             default:
                 //error;
-                
+                ErrorT error=new ErrorT(" " , raiz.linea, raiz.columna, "Semantico","Error en la declaracion de variable");
+                LSemanticos.add(error);
+                return;
         }
         
         if(flag){
-           for(Nodo a:raiz.hijos.get(1).hijos){
-            guardar_variable(tipo,a.valor,res, a.linea, a.columna);
-        } 
+            for (Nodo a : raiz.hijos.get(1).hijos) {
+                guardar_variable(tipo, a.valor, res, a.linea, a.columna);
+            }
         }
      }
     
@@ -394,9 +404,31 @@ public class Interprete {
                 break;
             case 2:
                 if(raiz.hijos.get(0).valor.compareToIgnoreCase("-")==0)
-                return (int)evaluar_expresion(raiz.hijos.get(1))*-1;
-                
-                else if(raiz.valor.equals("LLAMAR")){
+                {
+                    Object val1=evaluar_expresion(raiz.hijos.get(1));
+                    int tipo1 = retornar_tipo(val1);
+                    
+                    if (tipo1 == -1) {
+                        //error evaluacion dio null
+                        ErrorT error = new ErrorT(raiz.hijos.get(0).valor, raiz.hijos.get(0).linea, raiz.hijos.get(0).columna, "Semantico", "Error en la operacion");
+                        LSemanticos.add(error);
+                        return -3092;
+                    }
+
+                    if (tipo1 == 1) {
+                        ErrorT error = new ErrorT(raiz.hijos.get(0).valor, raiz.hijos.get(0).linea, raiz.hijos.get(0).columna, "Semantico", "No se puede multiplicar un Texto por -1");
+                        LSemanticos.add(error);
+                        return -3092;
+                    } else {
+                        if (tipo1 == 2) {
+                            return Double.parseDouble(val1.toString())*-1;
+                        } else {
+                            return Integer.parseInt(val1.toString())*-1;
+                        }
+                    }
+                    
+                    
+                }else if(raiz.valor.equals("LLAMAR")){
                     return evaluar_llamada(raiz);
                 }
             case 1:
@@ -639,11 +671,19 @@ public class Interprete {
         
         if(tipo1==-1 || tipo2==-1){
             //error evaluacion dio null
+            ErrorT error=new ErrorT(izq.toString(), izq.linea, izq.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error);
+            ErrorT error1=new ErrorT(der.toString(), der.linea, der.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error1);
             return -3092;
         }
         
         if(tipo1==1|| tipo2==1){
             //agregas a error no se pueden restar stirngs
+            ErrorT error=new ErrorT(val1.toString(), izq.linea, izq.columna, "Semantico", "No se puede multiplicar variables de tipo Texto");
+            LSemanticos.add(error);
+            ErrorT error1=new ErrorT(val2.toString(), der.linea, der.columna, "Semantico", "No se puede multiplicar variables de tipo Texto");
+            LSemanticos.add(error1);
             return -3092;
         }else{
            
@@ -657,7 +697,7 @@ public class Interprete {
     private Object evaluar_Igual(Nodo izq, Nodo der) {
        Object igual1 = evaluar_expresion(izq);
         Object igual2 = evaluar_expresion(der);
-
+        
         return igual1.equals(igual2);
     }
 
@@ -681,6 +721,10 @@ public class Interprete {
            return (boolean)val1&&(boolean)val2;
        }catch(Exception e){
            //agregar error
+           ErrorT error = new ErrorT(izq.toString(), izq.linea, izq.columna, "Semantico", "Evaluacion no soportada");
+           LSemanticos.add(error);
+           ErrorT error1 = new ErrorT(der.toString(), der.linea, der.columna, "Semantico", "Evaluacion no soportada");
+           LSemanticos.add(error1);
        }
        return -3092;
     }
@@ -693,6 +737,10 @@ public class Interprete {
            return (boolean)val1||(boolean)val2;
        }catch(Exception e){
            //agregar error
+           ErrorT error = new ErrorT(izq.toString(), izq.linea, izq.columna, "Semantico", "Evaluacion no soportada");
+           LSemanticos.add(error);
+           ErrorT error1 = new ErrorT(der.toString(), der.linea, der.columna, "Semantico", "Evaluacion no soportada");
+           LSemanticos.add(error1);
        }
        return -3092;
     }
@@ -706,11 +754,14 @@ public class Interprete {
         
         if(tipo1==-1 || tipo2==-1){
             //error evaluacion dio null
+            ErrorT error=new ErrorT(izq.toString(), izq.linea, izq.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error);
+            ErrorT error1=new ErrorT(der.toString(), der.linea, der.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error1);
             return -3092;
         }
         
         if(tipo1==1|| tipo2==1){
-            //agregas a error no se pueden restar stirngs
             if(val1.toString().compareTo(val2.toString())>0){
                 return true;
             }else 
@@ -729,11 +780,14 @@ public class Interprete {
         
         if(tipo1==-1 || tipo2==-1){
             //error evaluacion dio null
+            ErrorT error=new ErrorT(izq.toString(), izq.linea, izq.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error);
+            ErrorT error1=new ErrorT(der.toString(), der.linea, der.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error1);
             return -3092;
         }
         
         if(tipo1==1|| tipo2==1){
-            //agregas a error no se pueden restar stirngs
             if(val1.toString().compareTo(val2.toString())>=0){
                 return false;
             }else 
@@ -753,13 +807,17 @@ public class Interprete {
         
         if(tipo1==-1 || tipo2==-1){
             //error evaluacion dio null
+            ErrorT error=new ErrorT(izq.toString(), izq.linea, izq.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error);
+            ErrorT error1=new ErrorT(der.toString(), der.linea, der.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error1);
             return -3092;
         }
         if(tipo1==tipo2){
             
         }
         if(tipo1==1|| tipo2==1){
-            //agregas a error no se pueden restar stirngs
+            
             if(val1.toString().compareTo(val2.toString())>0){
                 return false;
             }else 
@@ -779,11 +837,15 @@ public class Interprete {
         
         if(tipo1==-1 || tipo2==-1){
             //error evaluacion dio null
+            ErrorT error=new ErrorT(izq.toString(), izq.linea, izq.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error);
+            ErrorT error1=new ErrorT(der.toString(), der.linea, der.columna, "Semantico", "Evaluacion no soportada");
+            LSemanticos.add(error1);
             return -3092;
         }
         
         if(tipo1==1|| tipo2==1){
-            //agregas a error no se pueden restar stirngs
+            
             if(val1.toString().compareTo(val2.toString())>=0){
                 return true;
             }else 
@@ -826,6 +888,9 @@ public class Interprete {
                 }
             }
         }catch(Exception e){
+            ErrorT error=new ErrorT(raiz.valor, raiz.linea, raiz.columna, "Semantico", "Error al evaluar If");
+            LSemanticos.add(error);
+            
             //error al evaluar if
         }
     }
@@ -841,6 +906,8 @@ public class Interprete {
             }
         }catch(Exception e){
             //error al evaluar if
+            ErrorT error=new ErrorT(raiz.valor, raiz.linea, raiz.columna, "Semantico", "Error al evaluar operacion");
+            LSemanticos.add(error);
         }
         romper = false;
     }
@@ -856,6 +923,8 @@ public class Interprete {
             }
         }catch(Exception e){
             //error al evaluar if
+            ErrorT error=new ErrorT(raiz.valor, raiz.linea, raiz.columna, "Semantico", "Error al evaluar operacion");
+            LSemanticos.add(error);
         }
         romper = false;
     }
@@ -866,6 +935,8 @@ public class Interprete {
         if(var!=null)
             return var.valor;
         else{
+            ErrorT error=new ErrorT(raiz.valor, raiz.linea, raiz.columna, "Semantico", "No existe variable");
+            LSemanticos.add(error);
             //garegar a error no existe variable
             return -3092;
         }
@@ -883,6 +954,8 @@ public class Interprete {
                     nombre+="_"+retornar_tipo_nombre(res).toUpperCase();
                 }else{
                     //ocurio un error al evaluar el metodo....
+                    ErrorT error=new ErrorT(raiz.valor, raiz.linea, raiz.columna, "Semantico", "error al evaluar el metodo");
+                    LSemanticos.add(error);
                     return null;
                 }
             }
@@ -892,6 +965,8 @@ public class Interprete {
                  return ejecutar_metodo(aux, lista, raiz);
             }else{
                 //no existe metodo
+                ErrorT error=new ErrorT(raiz.valor, raiz.linea, raiz.columna, "Semantico", "El metodo no existe");
+                LSemanticos.add(error);
                 return null;
             }
         }else{
@@ -900,6 +975,8 @@ public class Interprete {
                 return ejecutar_metodo(aux, null, raiz);
             } else {
                 //no existe metodo
+                ErrorT error=new ErrorT(raiz.valor, raiz.linea, raiz.columna, "Semantico", "El metodo no existe");
+                LSemanticos.add(error);
                 return null;
             }
         }
@@ -968,10 +1045,13 @@ public class Interprete {
                 }
             } catch (Exception a) {
                 //error
+                ErrorT error=new ErrorT(raiz.valor, raiz.linea, raiz.columna, "Semantico", "error al ejecutar Para");
+                LSemanticos.add(error);
             }
 
         } else {
-            return;//error
+           ErrorT error=new ErrorT(raiz.valor, raiz.linea, raiz.columna, "Semantico", "error al ejecutar Para");
+            LSemanticos.add(error);
         }
     }
 
@@ -1026,7 +1106,45 @@ public class Interprete {
         for (String ruta : imports) {
             
             File file=new File(ruta);
-            if(!file.isFile()&&!file.canRead())
+            if(file.isFile() && file.canRead())
+            {
+                String contenido = get_contenido(file);
+                try {
+                    LinkedList<Interprete_import> objetos = new LinkedList<Interprete_import>();
+                    Reader reader = new StringReader(contenido);
+                    Lexico analizador_lexico = new Lexico(reader);
+                    Sintactico analizador_sintactico = new Sintactico(analizador_lexico);
+                    
+                    analizador_lexico.lista_errores=LSemanticos;
+                    analizador_sintactico.lista_errores=LSemanticos;
+                    
+                    
+                    analizador_sintactico.parse();
+                    Interprete_import inter = new Interprete_import(analizador_sintactico.raiz);
+
+                    for (Map.Entry<String, Variable> entry : inter.actual.entrySet()) {
+                        Variable var = entry.getValue();
+                        guardar_variable(var.tipo, var.nombre, var.valor, 1, 1);
+                    }
+
+                    for (Metodo a : inter.lista_metodos) {
+                        boolean flag = true;
+                        for (Metodo aux : lista_metodos) {
+                            if (aux.nombre_aux.equals(a.nombre_aux)) {
+                                flag = false;
+                                break;
+                            }
+                        }
+                        if (flag) {
+                            lista_metodos.addLast(a);
+                        }
+                    }
+                } catch (Exception ex) {
+                    Logger.getLogger(Interprete.class.getName()).log(Level.SEVERE, null, ex);
+                    ErrorT error=new ErrorT(ruta, "Sintactico", "Errores en los archivos importados");
+                    LSemanticos.add(error);
+                }
+            }else
             {
                 ErrorT error=new ErrorT(ruta, "Semantico", "No existe el archivo");
                 LSemanticos.add(error);
@@ -1034,38 +1152,7 @@ public class Interprete {
             }
             
             
-            String contenido = get_contenido(file);
-            try {
-                LinkedList<Interprete_import> objetos = new LinkedList<Interprete_import>();
-                Reader reader = new StringReader(contenido);
-                Lexico analizador_lexico = new Lexico(reader);
-                Sintactico analizador_sintactico = new Sintactico(analizador_lexico);
-
-                analizador_sintactico.parse();
-                Interprete_import inter = new Interprete_import(analizador_sintactico.raiz);
-
-                for (Map.Entry<String, Variable> entry : inter.actual.entrySet()) {
-                    Variable var = entry.getValue();
-                    guardar_variable(var.tipo, var.nombre, var.valor, 1, 1);
-                }
-
-                for (Metodo a : inter.lista_metodos) {
-                    boolean flag = true;
-                    for (Metodo aux : lista_metodos) {
-                        if (aux.nombre_aux.equals(a.nombre_aux)) {
-                            flag = false;
-                            break;
-                        }
-                    }
-                    if (flag) {
-                        lista_metodos.addLast(a);
-                    }
-                }
-                // do what you have to do here
-                // In your case, another loop.
-            } catch (Exception ex) {
-                Logger.getLogger(Interprete.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            
         }
     }
 

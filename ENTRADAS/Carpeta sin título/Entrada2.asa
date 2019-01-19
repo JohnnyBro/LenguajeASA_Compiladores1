@@ -1,0 +1,15 @@
+
+
+Vacio Saludame(entero num, texto bandera){
+    a=16;
+    Decimal a=25*20;
+    
+}
+
+Texto Saludame(entero num, texto bandera){
+    b=16;
+    
+    return b;
+}
+
+

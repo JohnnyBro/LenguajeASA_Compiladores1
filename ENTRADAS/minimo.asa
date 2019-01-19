@@ -1,0 +1,61 @@
+importar minimo2.asa;
+
+
+Definir "C:\Users\Familia Corona\Desktop\Reportes_Pro2";
+Decimal  dec1 = 45.5 * 2.5 + (-50*2.0) + (45.2/10.0)-25.0+1.0^0+(105.0%10.0);
+Entero ent1 = -10 * (5*-5)+10+(800000000-799999999)+(100/5^2) + (499 %10);
+Booleano Bo1 = 50 == 50 ;
+Booleano Bo2 = "Hola" != "Hoal";
+Booleano Bo3 = 5.5 > 0.001;
+Booleano Bo4 = 0.0001 < 0.001;
+Booleano Bo5 = 10 * 2 >= 20 ;
+Booleano Bo6 = 50/2 <= 25 ;
+
+Booleano OR = Bo1 || Bo2 || Bo3 || Bo4 || Bo5 || false ;  
+Booleano AND = (Bo1 && Bo2 ) && ( Bo3 && Bo4 ) && ( Bo5 || false);
+Booleano NOT =  !( ( OR || AND ) || ( AND && AND ) || false );
+
+Decimal a, b, c = 45.5; 
+Entero uno,dos,tres = -100;
+Texto abc, def, ghi = "Calificacion Compis";
+Booleano b1,b2,b3 = false;
+
+Vacio Principal()
+{
+	Entero nlocal = 50 *2 +10 ;
+	Booleano blocal = true || false;
+	Decimal dlocal = 10.002 + a - b + c ;
+	Texto tlocal = abc + retornaTEXTO();
+	
+	Mostrar("=============== Validacion de Globales/EXP ARIT ==============");
+	Mostrar(" Entero Global -> "+(uno+ent1));
+	Mostrar(" Decimal Global -> "+ a + " -> "+dec1);
+	Mostrar(" Texto Global -> "+abc);
+	Mostrar("=============== Validacion de Globales/ EXP REL Y LOG ==============");
+	Mostrar( " Validacion del igual - > "+Bo1);
+	Mostrar( " Validacion del diferente - > "+Bo2);
+	Mostrar( " Validacion del Mayor Igual -> "+Bo5);
+	Mostrar( " Validacion del Menor Igual -> "+Bo6);
+	Mostrar( " Validacion del AND -> "+AND);
+	Mostrar( " Validacion del OR -> "+OR);
+	Mostrar( " Validacion del NOT -> "+NOT);
+	Mostrar("=============== Validacion de Locales / EXP ARIT, REL Y LOG ==============");
+	Mostrar(" Entero local -> " + nlocal);
+	Mostrar(" Decimal local -> " + dlocal);
+	Mostrar(" Texto local -> " + tlocal);
+	Mostrar(" Booleano local -> "+ blocal );
+	--> Validacion de casteos
+	validarCasteos();
+	sentencias1();
+    sentencias2();
+    DibujarAST(Sentencias1);
+	Entero pot;
+	pot = 2;
+	DibujarEXP(Suma()+25*(10-true-8)+(50/2)-nlocal+(5^pot)+(105%10));
+	DibujarTS();
+}
+Texto retornaTEXTO(){
+	Texto cad1 = " Esto";
+	Texto cad2 = " Funciona Bien -> :)";
+	retorno cad1 + cad2; 
+}

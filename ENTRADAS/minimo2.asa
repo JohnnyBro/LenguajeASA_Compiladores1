@@ -1,0 +1,113 @@
+Vacio validarCasteos(){
+	Mostrar("=============== Validacion de Casteos / EXP ARIT, REL Y LOG ==============");	
+	Entero casent =  5.5 + true - false;
+	Mostrar(" El casteo de entero es -> "+casent);
+	Decimal casdec = true * true + 50 + 25/true - false;
+	Mostrar(" El casteo de decimal es -> "+casdec);
+	Texto castext = (false + false) + 5.5 * 2 + 10 - 20.5 +true;
+	Mostrar(" El casteo de texto es -> "+castext);
+	Booleano casbool = 1 ;
+	Mostrar(" El casteo de booleano es -> "+casbool);
+	retorno;
+	Mostrar("Esto no debio haberlo mostrado :( ");
+	retorno;
+}
+Entero sentencias1(){
+	
+	Mostrar("=============== Validacion de Sentencias Es_true / Es_false y Mientras_que ==============");
+
+	Entero bandera1 = 10.5;
+	
+	Es_Verdadero( bandera1 > (5*2-5) )
+	{
+		Entero loc = 5*1 ; 
+		Mostrar("Sentencia Es_true Correcta -> "+(bandera1 +loc));
+	}
+
+	Es_Verdadero(false || false || ( false && false))
+    {
+		Mostrar("ERROR Es_false : Entro en un lugar donde no debia :'v ");
+	}
+	Es_Falso
+    {
+		Entero bandera2 = 20;
+		Mostrar("Setencia Es_false Correcta  -> "+bandera2);
+	}
+
+	Decimal bandera2 = 5*2 + 15;
+
+	Mientras_que( bandera2 >= 10.0 )
+    {
+		Mostrar(" Iteracion mientras_que No. -> "+bandera2);
+		Es_Verdadero(bandera2 == 15.0 )
+        {
+			Decimal decs = 10.5-2; 
+			Mostrar("Iteracion central -> "+bandera2 + decs);
+		}
+		bandera2 = bandera2 - 1;
+	}
+	retorno 1;
+}
+Decimal sentencias2()
+{	
+	Mostrar("=============== Validacion de Sentencias Para y Cmbiar_a   ==============");
+
+	Texto abc = "Texto temporal";
+	
+	Entero tmp = 5.0 - true;
+
+	Para( Entero a =  tmp ; a < 10 ; ++)
+    {
+		Entero tmp2 = 10-true - true - 8;
+		Para( Decimal b = 25 ; b > 0.0 ; --)
+        {
+			Es_verdadero(b%5 == 0.0 ){
+				tmp2 = tmp2 + 5;
+				Mostrar("tmp2 Cambio a  -> "+tmp2+ " iteracion ext -> "+a);					
+			}
+		}		
+	}
+
+	sentencias3();
+
+	retorno 1.0;
+}
+
+Booleano sentencias3(){	
+	Entero num = 10;
+	Cambiar_a(num*2+(10- 20))
+	{
+		Valor 2: 
+			Mostrar("Entro en el caso 2 : Esta mal :( ");
+			Romper;
+		Valor 4:
+			Mostrar("Entro en el caso 4 : Esta mal :( ");
+			Romper;
+		Valor 6:
+			Mostrar("Entro en el caso 6 : Esta mal :( ");
+			Romper;
+		Valor 8:
+			Mostrar("Entro en el caso 8 : Esta mal :( ");
+			Romper;
+		Valor 10:
+			Mostrar("Entro en el caso 10, esta bien :)");
+		No_cumple:
+			Mostrar("Entro en no cumple, esta bien :) ");
+	}
+	Texto val = "compis";
+	Cambiar_a(val+"1"){
+
+		Valor "arquis1":
+			Mostrar("Esto no lo debe mostrar, caso arquis1 :(");
+		Valor "arquis2":
+			Mostrar("Esto no lo debe mostrar, caso arquis2 :(");
+		Valor "compis1":
+			Mostrar("Esto si lo debe mostrar, caso compis1 :)");
+			Romper;
+		Valor "compis2":
+			Mostrar("Esto no lo debe mostrar, caso compis2 :(");
+		No_cumple: 
+		 	Mostrar("Esto no lo debe mostrar, caso defecto :(");
+	}
+	retorno true;	
+}

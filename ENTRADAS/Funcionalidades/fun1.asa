@@ -1,0 +1,65 @@
+<////////////////////////////////////////////////////////////
+Curso: Lenguajes y Compiladores 1
+Seccion: N
+Escuela: Escuela de Vacaciones
+Año: 2018
+Fecha de Calificación: 18 de enero de 2019
+////////////////////////////////////////////////////////////>
+
+importar fun2.asa;
+
+Texto retornaCad1(){
+	-->este metodo va en fun1
+	Texto ret = "Soy"
+	retorno ret+"algo";
+}
+
+vacio Funcionalidad_4(){
+	Mostrar("=================== Resultados FUNCIONALIDAD 4 ===================");
+	Es_verdadero(verdadero && !(falso)){
+		Mostrar("F4: Entro en el Es_verdadero, bien 1");
+		Entero numero = 20;
+		mientras_que(numero > 0 && verdadero ){			
+			Hasta_que(numero < 10 ){
+				Para(Entero a = 1 ; a<6 ; ++){
+					Cambiar_a(a){
+						valor 1:
+							Mostrar("Entro en caso 1 con a -> "+a+" y numero -> " +numero);
+							romper;
+						valor 2:
+							Mostrar("Entro en caso 2 con a -> "+a+" y numero -> " +numero);
+							romper;	
+						valor 3:
+							Mostrar("Entro en caso 3 con a -> "+a+" y numero -> " +numero);
+							romper;
+						valor 4:
+							Mostrar("Entro en caso 4 con a -> "+a+" y numero -> " +numero);
+							romper;
+						valor 5:
+							Mostrar("Entro en caso 5 con a -> "+a+" y numero -> " +numero);
+							romper;
+					}					
+				}
+				Mostrar("F4: Iteracion hasta_que con numero -> "+numero);
+				continuar;
+				Mostrar("ERROR: el continuar en el hasta que no funciona :(");
+			}
+			numero= numero - 1;
+			Mostrar("F4: Iteracion mientras con numero -> "+numero);
+			Es_verdadero( numero > 0 ){
+				Mostrar("Entro en el if 1 del while -> va bien");				
+				Es_verdadero(!falso){
+					Mostrar("Entro en el if 2 del while -> va bien");
+					Es_verdadero(!falso || verdadero ){
+						Mostrar("Entro en el if 3 del while -> va bien");
+						romper;
+						Mostrar("Imprimio despues del romper -> no jalo :(");
+					}
+				}				
+			}			
+			Mostrar("El romper dentro del mientras no funciona :( ");
+		}
+	}Es_falso{
+		Mostrar("F4: Esto no debio mostrarlo, mal :(")
+	}
+}
